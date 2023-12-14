@@ -8,25 +8,30 @@ datasource db {
 }
 
 model Product {
-  id                   String       @id @default(uuid())
+  id                   String            @id @default(uuid())
+  title                String
+  description          String?
   image                String
   articleSupplier      String?
   articleKOLESO        String
-  title                String
-  color                String
-  size                 String?
+  color                color_enum
+  size                 String?           @db.VarChar(20)
   brand                String?
+  model                String?
+  gender               user_gender_enum?
+  composition          Json?
   quantity             Int
   priceWithoutDiscount Float
   finalPrice           Float
+  storeId              String
   sectionId            Int
   categoryId           Int?
   subcategoryId        Int?
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @default(now())
-  category             Category?    @relation(fields: [categoryId], references: [id])
-  section              Section      @relation(fields: [sectionId], references: [id])
-  subcategory          Subcategory? @relation(fields: [subcategoryId], references: [id])
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @default(now())
+  category             Category?         @relation(fields: [categoryId], references: [id])
+  section              Section           @relation(fields: [sectionId], references: [id])
+  subcategory          Subcategory?      @relation(fields: [subcategoryId], references: [id])
 }
 
 model Section {
@@ -54,4 +59,39 @@ model Subcategory {
   categoryId Int
   products   Product[]
   category   Category  @relation(fields: [categoryId], references: [id])
+}
+
+enum user_gender_enum {
+  male
+  female
+}
+
+enum color_enum {
+  Aquamarine
+  Beige
+  Black
+  Blue
+  Brown
+  Cherry
+  Cream
+  Emerald
+  Fuchsia
+  Golden
+  Green
+  Grey
+  LightBlue
+  Lilac
+  Maroon
+  Olive
+  Orange
+  Pink
+  Purple
+  Raspberry
+  Red
+  Sandy
+  Silver
+  Turquoise
+  Violet
+  White
+  Yellow
 }

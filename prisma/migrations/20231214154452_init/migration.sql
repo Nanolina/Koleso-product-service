@@ -1,16 +1,27 @@
+-- CreateEnum
+CREATE TYPE "user_gender_enum" AS ENUM ('male', 'female');
+
+-- CreateEnum
+CREATE TYPE "color_enum" AS ENUM ('Aquamarine', 'Beige', 'Black', 'Blue', 'Brown', 'Cherry', 'Cream', 'Emerald', 'Fuchsia', 'Golden', 'Green', 'Grey', 'LightBlue', 'Lilac', 'Maroon', 'Olive', 'Orange', 'Pink', 'Purple', 'Raspberry', 'Red', 'Sandy', 'Silver', 'Turquoise', 'Violet', 'White', 'Yellow');
+
 -- CreateTable
 CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
     "image" TEXT NOT NULL,
     "articleSupplier" TEXT,
     "articleKOLESO" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "color" TEXT NOT NULL,
-    "size" TEXT,
+    "color" "color_enum" NOT NULL,
+    "size" VARCHAR(20),
     "brand" TEXT,
+    "model" TEXT,
+    "gender" "user_gender_enum",
+    "composition" JSONB,
     "quantity" INTEGER NOT NULL,
     "priceWithoutDiscount" DOUBLE PRECISION NOT NULL,
     "finalPrice" DOUBLE PRECISION NOT NULL,
+    "storeId" TEXT NOT NULL,
     "sectionId" INTEGER NOT NULL,
     "categoryId" INTEGER,
     "subcategoryId" INTEGER,
