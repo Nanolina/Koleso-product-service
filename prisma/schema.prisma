@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                   String       @id @default(uuid())
+  image                String
+  articleSupplier      String?
+  articleKOLESO        String
+  title                String
+  color                String
+  size                 String?
+  brand                String?
+  quantity             Int
+  priceWithoutDiscount Float
+  finalPrice           Float
+  sectionId            Int
+  categoryId           Int?
+  subcategoryId        Int?
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @default(now())
+  category             Category?    @relation(fields: [categoryId], references: [id])
+  section              Section      @relation(fields: [sectionId], references: [id])
+  subcategory          Subcategory? @relation(fields: [subcategoryId], references: [id])
+}
+
+model Section {
+  id         Int        @id @default(autoincrement())
+  name       String
+  image      String
+  categories Category[]
+  products   Product[]
+}
+
+model Category {
+  id            Int           @id @default(autoincrement())
+  name          String
+  image         String
+  sectionId     Int
+  section       Section       @relation(fields: [sectionId], references: [id])
+  products      Product[]
+  subcategories Subcategory[]
+}
+
+model Subcategory {
+  id         Int       @id @default(autoincrement())
+  name       String
+  image      String
+  categoryId Int
+  products   Product[]
+  category   Category  @relation(fields: [categoryId], references: [id])
+}
