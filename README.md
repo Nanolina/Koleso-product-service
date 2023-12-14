@@ -1,1 +1,1 @@
-# Koleso-product-service
+# This repository is used to manage goods/products
