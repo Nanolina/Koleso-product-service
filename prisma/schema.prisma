@@ -31,6 +31,7 @@ model Product {
   updatedAt            DateTime          @default(now())
   category             Category?         @relation(fields: [categoryId], references: [id])
   section              Section           @relation(fields: [sectionId], references: [id])
+  store                Store             @relation(fields: [storeId], references: [id])
   subcategory          Subcategory?      @relation(fields: [subcategoryId], references: [id])
 }
 
@@ -59,6 +60,20 @@ model Subcategory {
   categoryId Int
   products   Product[]
   category   Category  @relation(fields: [categoryId], references: [id])
+}
+
+model Store {
+  id          String    @id @default(uuid())
+  name        String    @db.VarChar(255)
+  description String?
+  logo        String?
+  phoneNumber String?   @unique
+  whatsApp    String?
+  email       String?   @unique
+  instagram   String?
+  addressId   String?
+  userId      String
+  products    Product[]
 }
 
 enum user_gender_enum {

@@ -60,11 +60,36 @@ CREATE TABLE "Subcategory" (
     CONSTRAINT "Subcategory_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Store" (
+    "id" TEXT NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
+    "description" TEXT,
+    "logo" TEXT,
+    "phoneNumber" TEXT,
+    "whatsApp" TEXT,
+    "email" TEXT,
+    "instagram" TEXT,
+    "addressId" TEXT,
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Store_phoneNumber_key" ON "Store"("phoneNumber");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Store_email_key" ON "Store"("email");
+
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_sectionId_fkey" FOREIGN KEY ("sectionId") REFERENCES "Section"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Product" ADD CONSTRAINT "Product_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_subcategoryId_fkey" FOREIGN KEY ("subcategoryId") REFERENCES "Subcategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
