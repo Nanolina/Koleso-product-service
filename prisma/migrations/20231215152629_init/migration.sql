@@ -1,8 +1,8 @@
 -- CreateEnum
-CREATE TYPE "user_gender_enum" AS ENUM ('male', 'female');
+CREATE TYPE "GenderType" AS ENUM ('Male', 'Female');
 
 -- CreateEnum
-CREATE TYPE "color_enum" AS ENUM ('Aquamarine', 'Beige', 'Black', 'Blue', 'Brown', 'Cherry', 'Cream', 'Emerald', 'Fuchsia', 'Golden', 'Green', 'Grey', 'LightBlue', 'Lilac', 'Maroon', 'Olive', 'Orange', 'Pink', 'Purple', 'Raspberry', 'Red', 'Sandy', 'Silver', 'Turquoise', 'Violet', 'White', 'Yellow');
+CREATE TYPE "ColorType" AS ENUM ('Aquamarine', 'Beige', 'Black', 'Blue', 'Brown', 'Cherry', 'Cream', 'Emerald', 'Fuchsia', 'Golden', 'Green', 'Grey', 'LightBlue', 'Lilac', 'Maroon', 'Olive', 'Orange', 'Pink', 'Purple', 'Raspberry', 'Red', 'Sandy', 'Silver', 'Turquoise', 'Violet', 'White', 'Yellow');
 
 -- CreateTable
 CREATE TABLE "Product" (
@@ -12,11 +12,11 @@ CREATE TABLE "Product" (
     "image" TEXT NOT NULL,
     "articleSupplier" TEXT,
     "articleKOLESO" TEXT NOT NULL,
-    "color" "color_enum" NOT NULL,
+    "color" "ColorType" NOT NULL,
     "size" VARCHAR(20),
     "brand" TEXT,
     "model" TEXT,
-    "gender" "user_gender_enum",
+    "gender" "GenderType",
     "composition" JSONB,
     "quantity" INTEGER NOT NULL,
     "priceWithoutDiscount" DOUBLE PRECISION NOT NULL,
@@ -70,8 +70,8 @@ CREATE TABLE "Store" (
     "whatsApp" TEXT,
     "email" TEXT,
     "instagram" TEXT,
-    "addressId" TEXT,
     "userId" TEXT NOT NULL,
+    "addressIds" TEXT[],
 
     CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
 );

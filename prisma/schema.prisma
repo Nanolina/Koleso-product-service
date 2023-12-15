@@ -8,17 +8,17 @@ datasource db {
 }
 
 model Product {
-  id                   String            @id @default(uuid())
+  id                   String       @id @default(uuid())
   title                String
   description          String?
   image                String
   articleSupplier      String?
   articleKOLESO        String
-  color                color_enum
-  size                 String?           @db.VarChar(20)
+  color                ColorType
+  size                 String?      @db.VarChar(20)
   brand                String?
   model                String?
-  gender               user_gender_enum?
+  gender               GenderType?
   composition          Json?
   quantity             Int
   priceWithoutDiscount Float
@@ -27,12 +27,12 @@ model Product {
   sectionId            Int
   categoryId           Int?
   subcategoryId        Int?
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @default(now())
-  category             Category?         @relation(fields: [categoryId], references: [id])
-  section              Section           @relation(fields: [sectionId], references: [id])
-  store                Store             @relation(fields: [storeId], references: [id])
-  subcategory          Subcategory?      @relation(fields: [subcategoryId], references: [id])
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @default(now())
+  category             Category?    @relation(fields: [categoryId], references: [id])
+  section              Section      @relation(fields: [sectionId], references: [id])
+  store                Store        @relation(fields: [storeId], references: [id])
+  subcategory          Subcategory? @relation(fields: [subcategoryId], references: [id])
 }
 
 model Section {
@@ -71,17 +71,17 @@ model Store {
   whatsApp    String?
   email       String?   @unique
   instagram   String?
-  addressId   String?
   userId      String
+  addressIds  String[]
   products    Product[]
 }
 
-enum user_gender_enum {
-  male
-  female
+enum GenderType {
+  Male
+  Female
 }
 
-enum color_enum {
+enum ColorType {
   Aquamarine
   Beige
   Black
