@@ -68,12 +68,7 @@ model Store {
   name        String    @db.VarChar(255)
   description String?
   logo        String?
-  phoneNumber String?   @unique
-  whatsApp    String?
-  email       String?   @unique
-  instagram   String?
   userId      String
-  addressIds  String[]
   products    Product[]
 }
 

@@ -66,21 +66,10 @@ CREATE TABLE "Store" (
     "name" VARCHAR(255) NOT NULL,
     "description" TEXT,
     "logo" TEXT,
-    "phoneNumber" TEXT,
-    "whatsApp" TEXT,
-    "email" TEXT,
-    "instagram" TEXT,
     "userId" TEXT NOT NULL,
-    "addressIds" TEXT[],
 
     CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "Store_phoneNumber_key" ON "Store"("phoneNumber");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Store_email_key" ON "Store"("email");
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
