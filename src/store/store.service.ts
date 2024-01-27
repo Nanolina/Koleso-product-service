@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateStoreServiceDto } from './dto';
 import { CreateStoreDto } from './dto/create-store.dto';
 
 @Injectable()
@@ -43,15 +44,35 @@ export class StoreService {
     });
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} store`;
-  // }
+  async findOne(id: string, userId: string) {
+    return this.prisma.store.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+  }
 
-  // update(id: number, updateStoreDto: UpdateStoreDto) {
-  //   return `This action updates a #${id} store`;
-  // }
+  async update(dto: UpdateStoreServiceDto) {
+    try {
+      return await this.prisma.store.update({
+        where: {
+          id: dto.id,
+          userId: dto.userId,
+        },
+        data: {
+          name: dto.name,
+          description: dto.description,
+        },
+      });
+    } catch (error) {
+      this.logger.error({ method: 'update', error });
 
-  // remove(id: number) {
+      throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
+    }
+  }
+
+  // async remove(id: number) {
   //   return `This action removes a #${id} store`;
   // }
 }

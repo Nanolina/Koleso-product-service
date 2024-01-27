@@ -4,10 +4,13 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
   Post,
   Req,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { UpdateStoreDto } from './dto';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { StoreService } from './store.service';
 
@@ -26,15 +29,23 @@ export class StoreController {
     return this.storeService.findAll(req.user.id);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.storeService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string, @Req() req: Request) {
+    return this.storeService.findOne(id, req.user.id);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateStoreDto: UpdateStoreDto) {
-  //   return this.storeService.update(+id, updateStoreDto);
-  // }
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateStoreDto: UpdateStoreDto,
+    @Req() req: Request,
+  ) {
+    return this.storeService.update({
+      id,
+      userId: req.user.id,
+      ...updateStoreDto,
+    });
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {
