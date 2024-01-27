@@ -35,9 +35,13 @@ export class StoreService {
     });
   }
 
-  // findAll() {
-  //   return `This action returns all store`;
-  // }
+  async findAll(userId: string) {
+    return this.prisma.store.findMany({
+      where: {
+        userId,
+      },
+    });
+  }
 
   // findOne(id: number) {
   //   return `This action returns a #${id} store`;

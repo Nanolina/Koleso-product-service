@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -20,10 +21,10 @@ export class StoreController {
     return this.storeService.create(createStoreDto, req.user.id);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.storeService.findAll();
-  // }
+  @Get()
+  findAll(@Req() req: Request) {
+    return this.storeService.findAll(req.user.id);
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
