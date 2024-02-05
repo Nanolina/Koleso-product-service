@@ -1,9 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 
-export const imageFileFilter = (req, file, callback) => {
+const imageFileFilter = (req, file, callback) => {
   if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
     callback(
-      new BadRequestException('"The image format should be either jpeg or png'),
+      new BadRequestException('The image format should be either jpeg or png'),
       false,
     );
     return;

@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -74,6 +78,10 @@ export class StoreService {
       },
     });
 
+    if (!storeFromDB) {
+      throw new NotFoundException('Store not found, please try again');
+    }
+
     // Remove logo from Cloudinary
     if (storeFromDB.logo && storeFromDB.logoPublicId) {
       try {
@@ -122,6 +130,10 @@ export class StoreService {
         userId,
       },
     });
+
+    if (!storeFromDB) {
+      throw new NotFoundException('Store not found, please try again');
+    }
 
     // Remove logo from Cloudinary
     if (storeFromDB.logo && storeFromDB.logoPublicId) {
