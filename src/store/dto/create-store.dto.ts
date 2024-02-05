@@ -8,6 +8,4 @@ export class CreateStoreDto {
   @IsString()
   @IsOptional()
   description?: string;
-
-  //   logo: string;
 }
