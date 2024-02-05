@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -53,8 +54,8 @@ export class StoreController {
     return this.storeService.update(updateStoreDto, id, req.user.id, logo);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.storeService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string, @Req() req: Request) {
+    return this.storeService.remove(id, req.user.id);
+  }
 }

@@ -122,7 +122,36 @@ export class StoreService {
     }
   }
 
-  // async remove(id: number) {
-  //   return `This action removes a #${id} store`;
-  // }
+  async remove(id: string, userId: string) {
+    // Find a store
+    const storeFromDB = await this.prisma.store.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    // Remove logo from Cloudinary
+    if (storeFromDB.logo && storeFromDB.logoPublicId) {
+      try {
+        await this.cloudinaryService.deleteFile(storeFromDB.logoPublicId);
+      } catch (error) {
+        this.logger.error({ method: 'remove', error });
+      }
+    }
+
+    // Remove store
+    try {
+      return await this.prisma.store.delete({
+        where: {
+          id: id,
+          userId: userId,
+        },
+      });
+    } catch (error) {
+      this.logger.error({ method: 'remove', error });
+
+      throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
+    }
+  }
 }
