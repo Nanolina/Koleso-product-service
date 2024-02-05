@@ -64,12 +64,13 @@ model Subcategory {
 }
 
 model Store {
-  id          String    @id @default(uuid())
-  name        String    @db.VarChar(255)
-  description String?
-  logo        String?
-  userId      String
-  products    Product[]
+  id           String    @id @default(uuid())
+  name         String    @db.VarChar(255)
+  description  String?
+  logo         String?
+  logoPublicId String?
+  userId       String
+  products     Product[]
 }
 
 enum GenderType {

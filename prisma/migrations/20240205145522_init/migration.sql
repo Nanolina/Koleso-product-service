@@ -66,6 +66,7 @@ CREATE TABLE "Store" (
     "name" VARCHAR(255) NOT NULL,
     "description" TEXT,
     "logo" TEXT,
+    "logoPublicId" TEXT,
     "userId" TEXT NOT NULL,
 
     CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
