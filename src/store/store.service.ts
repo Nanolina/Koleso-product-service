@@ -27,7 +27,7 @@ export class StoreService {
 
     // Create store
     try {
-      await this.prisma.store.create({
+      return await this.prisma.store.create({
         data: {
           userId,
           name: dto.name,
@@ -36,19 +36,11 @@ export class StoreService {
           logoPublicId: logoFromCloudinary?.public_id,
         },
       });
-
-      this.logger.log({ method: 'create', log: 'store_created' });
     } catch (error) {
       this.logger.error({ method: 'create', error });
 
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
-
-    return await this.prisma.store.findMany({
-      where: {
-        userId,
-      },
-    });
   }
 
   async findAll(userId: string) {
