@@ -1,4 +1,4 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Param, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { ProductService } from './product.service';
 
@@ -9,5 +9,10 @@ export class ProductController {
   @Get()
   findAll(@Req() req: Request) {
     return this.productService.findAll(req.user.id);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string, @Req() req: Request) {
+    return this.productService.findOne(id, req.user.id);
   }
 }

@@ -7,7 +7,7 @@ CREATE TYPE "ColorType" AS ENUM ('Aquamarine', 'Beige', 'Black', 'Blue', 'Brown'
 -- CreateTable
 CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "description" TEXT,
     "image" TEXT NOT NULL,
     "imagePublicId" TEXT NOT NULL,

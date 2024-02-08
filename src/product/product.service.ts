@@ -17,4 +17,13 @@ export class ProductService {
       },
     });
   }
+
+  async findOne(id: string, userId: string) {
+    return this.prisma.product.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+  }
 }
