@@ -13,8 +13,9 @@ model Product {
   title                String
   description          String?
   image                String
+  imagePublicId        String
   articleSupplier      String?
-  articleKOLESO        String
+  articleKoleso        String
   color                ColorType
   size                 String?      @db.VarChar(20)
   brand                String?
@@ -25,6 +26,7 @@ model Product {
   priceWithoutDiscount Float
   finalPrice           Float
   storeId              String
+  userId               String
   sectionId            Int
   categoryId           Int?
   subcategoryId        Int?

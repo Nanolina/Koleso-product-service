@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { LoggerModule } from './logger/logger.module';
 import { PrismaService } from './prisma/prisma.service';
+import { ProductModule } from './product/product.module';
 import { StoreModule } from './store/store.module';
 
 @Module({
@@ -11,6 +12,7 @@ import { StoreModule } from './store/store.module';
     LoggerModule,
     AuthModule,
     StoreModule,
+    ProductModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
