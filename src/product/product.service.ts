@@ -20,9 +20,9 @@ export class ProductService {
           userId,
           name: dto.name,
           description: dto.description,
-          articleSupplier: dto.articleSupplier,
           brand: dto.brand,
           model: dto.model,
+          articleSupplier: dto.articleSupplier,
           image: '',
           imagePublicId: '',
           articleKoleso: '',
@@ -30,8 +30,16 @@ export class ProductService {
           finalPrice: 0,
           color: 'White',
           quantity: 0,
-          sectionId: 1,
-          storeId: '14549e9c-648a-47b5-bb8b-ca1966d41e11',
+          section: {
+            connect: {
+              id: 1,
+            },
+          },
+          store: {
+            connect: {
+              id: dto.storeId,
+            },
+          },
         },
       });
     } catch (error) {

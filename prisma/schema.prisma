@@ -12,14 +12,14 @@ model Product {
   id                   String       @id @default(uuid())
   name                 String
   description          String?
-  image                String
-  imagePublicId        String
-  articleSupplier      String?
-  articleKoleso        String
-  color                ColorType
-  size                 String?      @db.VarChar(20)
   brand                String?
   model                String?
+  articleSupplier      String?
+  articleKoleso        String
+  image                String
+  imagePublicId        String
+  color                ColorType
+  size                 String?      @db.VarChar(20)
   gender               GenderType?
   composition          Json?
   quantity             Int

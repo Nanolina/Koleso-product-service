@@ -13,10 +13,10 @@ import { StoreModule } from './store/store.module';
     AuthModule,
     StoreModule,
     ProductModule,
+    CloudinaryModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    CloudinaryModule,
   ],
   providers: [PrismaService],
 })

@@ -1,6 +1,16 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateProductDto {
+  @IsDefined()
+  @IsUUID()
+  storeId: string;
+
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -11,15 +21,15 @@ export class CreateProductDto {
 
   @IsString()
   @IsOptional()
-  articleSupplier?: string;
-
-  @IsString()
-  @IsOptional()
   brand?: string;
 
   @IsString()
   @IsOptional()
   model?: string;
+
+  @IsString()
+  @IsOptional()
+  articleSupplier?: string;
 
   // @IsNumber()
   // @IsDefined()
