@@ -1,6 +1,7 @@
 import {
   IsDefined,
   IsNotEmpty,
+  IsNumberString,
   IsOptional,
   IsString,
   IsUUID,
@@ -31,11 +32,11 @@ export class CreateProductDto {
   @IsOptional()
   articleSupplier?: string;
 
-  // @IsNumber()
-  // @IsDefined()
-  // priceWithoutDiscount: string;
+  @IsNumberString()
+  @IsDefined()
+  priceWithoutDiscount: string;
 
-  // @IsNumber()
-  // @IsDefined()
-  // finalPrice: string;
+  @IsNumberString()
+  @IsDefined()
+  finalPrice: string;
 }

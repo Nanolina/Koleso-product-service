@@ -23,11 +23,11 @@ export class ProductService {
           brand: dto.brand,
           model: dto.model,
           articleSupplier: dto.articleSupplier,
+          priceWithoutDiscount: parseFloat(dto.priceWithoutDiscount),
+          finalPrice: parseFloat(dto.finalPrice),
           image: '',
           imagePublicId: '',
           articleKoleso: '',
-          priceWithoutDiscount: 0,
-          finalPrice: 0,
           color: 'White',
           quantity: 0,
           section: {
