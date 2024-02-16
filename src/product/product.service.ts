@@ -25,6 +25,7 @@ export class ProductService {
           articleSupplier: dto.articleSupplier,
           priceWithoutDiscount: parseFloat(dto.priceWithoutDiscount),
           finalPrice: parseFloat(dto.finalPrice),
+          gender: dto.gender,
           image: '',
           imagePublicId: '',
           articleKoleso: '',

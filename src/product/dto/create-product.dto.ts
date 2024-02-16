@@ -1,3 +1,4 @@
+import { GenderType } from '@prisma/client';
 import {
   IsDefined,
   IsNotEmpty,
@@ -5,7 +6,9 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Validate,
 } from 'class-validator';
+import { IsValidGenderConstraint } from '../validators';
 
 export class CreateProductDto {
   @IsDefined()
@@ -39,4 +42,8 @@ export class CreateProductDto {
   @IsNumberString()
   @IsDefined()
   finalPrice: string;
+
+  @IsOptional()
+  @Validate(IsValidGenderConstraint)
+  gender?: GenderType;
 }

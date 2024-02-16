@@ -16,15 +16,15 @@ model Product {
   model                String?
   articleSupplier      String?
   articleKoleso        String
+  priceWithoutDiscount Float
+  finalPrice           Float
+  gender               GenderType?
   image                String
   imagePublicId        String
   color                ColorType
   size                 String?      @db.VarChar(20)
-  gender               GenderType?
   composition          Json?
   quantity             Int
-  priceWithoutDiscount Float
-  finalPrice           Float
   storeId              String
   userId               String
   sectionId            Int
