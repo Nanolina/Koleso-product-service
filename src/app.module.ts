@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { CatalogModule } from './catalog/catalog.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { LoggerModule } from './logger/logger.module';
 import { PrismaService } from './prisma/prisma.service';
@@ -14,6 +15,7 @@ import { StoreModule } from './store/store.module';
     StoreModule,
     ProductModule,
     CloudinaryModule,
+    CatalogModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

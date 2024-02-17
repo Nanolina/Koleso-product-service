@@ -19,6 +19,9 @@ model Product {
   priceWithoutDiscount Float
   finalPrice           Float
   gender               GenderType?
+  sectionId            Int
+  categoryId           Int?
+  subcategoryId        Int?
   image                String
   imagePublicId        String
   color                ColorType
@@ -27,9 +30,6 @@ model Product {
   quantity             Int
   storeId              String
   userId               String
-  sectionId            Int
-  categoryId           Int?
-  subcategoryId        Int?
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @default(now())
   category             Category?    @relation(fields: [categoryId], references: [id])
@@ -41,7 +41,7 @@ model Product {
 model Section {
   id         Int        @id @default(autoincrement())
   name       String
-  image      String
+  image      String?
   categories Category[]
   products   Product[]
 }
@@ -49,7 +49,7 @@ model Section {
 model Category {
   id            Int           @id @default(autoincrement())
   name          String
-  image         String
+  image         String?
   sectionId     Int
   section       Section       @relation(fields: [sectionId], references: [id])
   products      Product[]
@@ -59,7 +59,7 @@ model Category {
 model Subcategory {
   id         Int       @id @default(autoincrement())
   name       String
-  image      String
+  image      String?
   categoryId Int
   products   Product[]
   category   Category  @relation(fields: [categoryId], references: [id])

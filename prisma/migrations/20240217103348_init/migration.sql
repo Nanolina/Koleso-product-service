@@ -9,24 +9,24 @@ CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "image" TEXT NOT NULL,
-    "imagePublicId" TEXT NOT NULL,
-    "articleSupplier" TEXT,
-    "articleKoleso" TEXT NOT NULL,
-    "color" "ColorType" NOT NULL,
-    "size" VARCHAR(20),
     "brand" TEXT,
     "model" TEXT,
-    "gender" "GenderType",
-    "composition" JSONB,
-    "quantity" INTEGER NOT NULL,
+    "articleSupplier" TEXT,
+    "articleKoleso" TEXT NOT NULL,
     "priceWithoutDiscount" DOUBLE PRECISION NOT NULL,
     "finalPrice" DOUBLE PRECISION NOT NULL,
-    "storeId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "gender" "GenderType",
     "sectionId" INTEGER NOT NULL,
     "categoryId" INTEGER,
     "subcategoryId" INTEGER,
+    "image" TEXT NOT NULL,
+    "imagePublicId" TEXT NOT NULL,
+    "color" "ColorType" NOT NULL,
+    "size" VARCHAR(20),
+    "composition" JSONB,
+    "quantity" INTEGER NOT NULL,
+    "storeId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -37,7 +37,7 @@ CREATE TABLE "Product" (
 CREATE TABLE "Section" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "image" TEXT NOT NULL,
+    "image" TEXT,
 
     CONSTRAINT "Section_pkey" PRIMARY KEY ("id")
 );
@@ -46,7 +46,7 @@ CREATE TABLE "Section" (
 CREATE TABLE "Category" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "image" TEXT NOT NULL,
+    "image" TEXT,
     "sectionId" INTEGER NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
@@ -56,7 +56,7 @@ CREATE TABLE "Category" (
 CREATE TABLE "Subcategory" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "image" TEXT NOT NULL,
+    "image" TEXT,
     "categoryId" INTEGER NOT NULL,
 
     CONSTRAINT "Subcategory_pkey" PRIMARY KEY ("id")

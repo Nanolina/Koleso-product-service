@@ -46,4 +46,16 @@ export class CreateProductDto {
   @IsOptional()
   @Validate(IsValidGenderConstraint)
   gender?: GenderType;
+
+  @IsNumberString()
+  @IsDefined()
+  sectionId: string;
+
+  @IsNumberString()
+  @IsOptional()
+  categoryId?: string;
+
+  @IsNumberString()
+  @IsOptional()
+  subcategoryId?: string;
 }

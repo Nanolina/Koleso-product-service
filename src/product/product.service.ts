@@ -14,6 +14,32 @@ export class ProductService {
   ) {}
 
   async create(dto: CreateProductDto, userId: string) {
+    // Catalog structure
+    const categoryId = dto.categoryId;
+    const subcategoryId = dto.subcategoryId;
+    const catalogStructure = {
+      section: {
+        connect: {
+          id: parseFloat(dto.sectionId),
+        },
+      },
+      ...(categoryId && {
+        category: {
+          connect: {
+            id: parseFloat(categoryId),
+          },
+        },
+      }),
+      ...(subcategoryId && {
+        subcategory: {
+          connect: {
+            id: parseFloat(subcategoryId),
+          },
+        },
+      }),
+    };
+
+    // Create
     try {
       return await this.prisma.product.create({
         data: {
@@ -31,16 +57,12 @@ export class ProductService {
           articleKoleso: '',
           color: 'White',
           quantity: 0,
-          section: {
-            connect: {
-              id: 1,
-            },
-          },
           store: {
             connect: {
               id: dto.storeId,
             },
           },
+          ...catalogStructure,
         },
       });
     } catch (error) {
