@@ -39,11 +39,23 @@ export class ProductService {
       }),
     };
 
+    // Composition
+    let composition;
+    const compositionDTO = dto.composition;
+    if (compositionDTO) {
+      try {
+        composition = JSON.parse(compositionDTO);
+      } catch (error) {
+        composition = undefined;
+      }
+    }
+
     // Create
     try {
       return await this.prisma.product.create({
         data: {
           userId,
+          composition,
           name: dto.name,
           description: dto.description,
           brand: dto.brand,

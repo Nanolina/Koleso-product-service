@@ -22,11 +22,11 @@ model Product {
   sectionId            Int
   categoryId           Int?
   subcategoryId        Int?
+  composition          Json?
   image                String
   imagePublicId        String
   color                ColorType
   size                 String?      @db.VarChar(20)
-  composition          Json?
   quantity             Int
   storeId              String
   userId               String

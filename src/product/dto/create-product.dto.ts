@@ -1,6 +1,7 @@
 import { GenderType } from '@prisma/client';
 import {
   IsDefined,
+  IsJSON,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
@@ -58,4 +59,8 @@ export class CreateProductDto {
   @IsNumberString()
   @IsOptional()
   subcategoryId?: string;
+
+  @IsJSON()
+  @IsOptional()
+  composition?: string;
 }
