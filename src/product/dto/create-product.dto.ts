@@ -63,4 +63,8 @@ export class CreateProductDto {
   @IsJSON()
   @IsOptional()
   composition?: string;
+
+  @IsJSON()
+  @IsDefined()
+  parameters: string;
 }

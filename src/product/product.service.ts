@@ -1,9 +1,14 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto';
+import { IParameter } from './types';
 
 @Injectable()
 export class ProductService {
@@ -46,36 +51,65 @@ export class ProductService {
       try {
         composition = JSON.parse(compositionDTO);
       } catch (error) {
-        composition = undefined;
+        this.logger.error({
+          method: 'create_try_catch_composition',
+          error,
+        });
       }
+    }
+
+    // Parameters
+    let parameters;
+    const parametersDTO = dto.parameters;
+    if (parametersDTO) {
+      try {
+        parameters = JSON.parse(parametersDTO);
+      } catch (error) {
+        this.logger.error({
+          method: 'create_try_catch_parameters',
+          error,
+        });
+      }
+    }
+
+    if (!parameters) {
+      this.logger.error({
+        method: 'create',
+        error: { parameters: parametersDTO },
+      });
+
+      throw new BadRequestException('Please add the quantity of items');
     }
 
     // Create
     try {
-      return await this.prisma.product.create({
-        data: {
-          userId,
-          composition,
-          name: dto.name,
-          description: dto.description,
-          brand: dto.brand,
-          model: dto.model,
-          articleSupplier: dto.articleSupplier,
-          priceWithoutDiscount: parseFloat(dto.priceWithoutDiscount),
-          finalPrice: parseFloat(dto.finalPrice),
-          gender: dto.gender,
-          image: '',
-          imagePublicId: '',
-          articleKoleso: '',
-          color: 'White',
-          quantity: 0,
-          store: {
-            connect: {
-              id: dto.storeId,
+      parameters.forEach(async (parameter: IParameter) => {
+        await this.prisma.product.create({
+          data: {
+            userId,
+            composition,
+            name: dto.name,
+            description: dto.description,
+            brand: dto.brand,
+            model: dto.model,
+            articleSupplier: dto.articleSupplier,
+            priceWithoutDiscount: parseFloat(dto.priceWithoutDiscount),
+            finalPrice: parseFloat(dto.finalPrice),
+            gender: dto.gender,
+            image: '',
+            imagePublicId: '',
+            articleKoleso: '',
+            color: parameter.color,
+            quantity: parameter.quantity,
+            size: parameter.size,
+            store: {
+              connect: {
+                id: dto.storeId,
+              },
             },
+            ...catalogStructure,
           },
-          ...catalogStructure,
-        },
+        });
       });
     } catch (error) {
       this.logger.error({ method: 'create', error });
