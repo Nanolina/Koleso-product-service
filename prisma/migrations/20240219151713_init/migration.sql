@@ -7,6 +7,7 @@ CREATE TYPE "ColorType" AS ENUM ('Aquamarine', 'Beige', 'Black', 'Blue', 'Brown'
 -- CreateTable
 CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
+    "groupId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "brand" TEXT,
@@ -19,12 +20,12 @@ CREATE TABLE "Product" (
     "sectionId" INTEGER NOT NULL,
     "categoryId" INTEGER,
     "subcategoryId" INTEGER,
-    "image" TEXT NOT NULL,
-    "imagePublicId" TEXT NOT NULL,
+    "composition" JSONB,
     "color" "ColorType" NOT NULL,
     "size" VARCHAR(20),
-    "composition" JSONB,
     "quantity" INTEGER NOT NULL,
+    "image" TEXT NOT NULL,
+    "imagePublicId" TEXT NOT NULL,
     "storeId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

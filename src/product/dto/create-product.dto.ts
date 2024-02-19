@@ -24,6 +24,10 @@ export class CreateProductDto {
   @IsNotEmpty()
   name: string;
 
+  @IsDefined()
+  @IsUUID()
+  groupId: string;
+
   @IsString()
   @IsOptional()
   description?: string;

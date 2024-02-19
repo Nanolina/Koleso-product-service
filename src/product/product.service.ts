@@ -53,6 +53,7 @@ export class ProductService {
           data: {
             userId,
             name: dto.name,
+            groupId: dto.groupId,
             description: dto.description,
             brand: dto.brand,
             model: dto.model,
@@ -85,6 +86,15 @@ export class ProductService {
 
   async findAll(userId: string) {
     return this.prisma.product.findMany({
+      where: {
+        userId,
+      },
+    });
+  }
+
+  async findGroupIds(userId: string) {
+    return this.prisma.product.groupBy({
+      by: ['groupId', 'name', 'finalPrice', 'brand', 'model'],
       where: {
         userId,
       },

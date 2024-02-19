@@ -10,6 +10,7 @@ datasource db {
 
 model Product {
   id                   String       @id @default(uuid())
+  groupId              String
   name                 String
   description          String?
   brand                String?
@@ -23,11 +24,11 @@ model Product {
   categoryId           Int?
   subcategoryId        Int?
   composition          Json?
-  image                String
-  imagePublicId        String
   color                ColorType
   size                 String?      @db.VarChar(20)
   quantity             Int
+  image                String
+  imagePublicId        String
   storeId              String
   userId               String
   createdAt            DateTime     @default(now())
