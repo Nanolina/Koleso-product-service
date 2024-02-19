@@ -1,15 +1,19 @@
 import { GenderType } from '@prisma/client';
+import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsDefined,
-  IsJSON,
   IsNotEmpty,
-  IsNumberString,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
   Validate,
+  ValidateNested,
 } from 'class-validator';
 import { IsValidGenderConstraint } from '../validators';
+import { CompositionDto } from './composition.dto';
+import { ParameterDto } from './parameter.dto';
 
 export class CreateProductDto {
   @IsDefined()
@@ -36,35 +40,39 @@ export class CreateProductDto {
   @IsOptional()
   articleSupplier?: string;
 
-  @IsNumberString()
+  @IsNumber()
   @IsDefined()
-  priceWithoutDiscount: string;
+  priceWithoutDiscount: number;
 
-  @IsNumberString()
+  @IsNumber()
   @IsDefined()
-  finalPrice: string;
+  finalPrice: number;
 
   @IsOptional()
   @Validate(IsValidGenderConstraint)
   gender?: GenderType;
 
-  @IsNumberString()
+  @IsNumber()
   @IsDefined()
-  sectionId: string;
+  sectionId: number;
 
-  @IsNumberString()
+  @IsNumber()
   @IsOptional()
-  categoryId?: string;
+  categoryId?: number;
 
-  @IsNumberString()
+  @IsNumber()
   @IsOptional()
-  subcategoryId?: string;
+  subcategoryId?: number;
 
-  @IsJSON()
+  @IsArray()
   @IsOptional()
-  composition?: string;
+  @ValidateNested({ each: true })
+  @Type(() => CompositionDto)
+  composition?: CompositionDto[];
 
-  @IsJSON()
+  @IsArray()
   @IsDefined()
-  parameters: string;
+  @ValidateNested({ each: true })
+  @Type(() => ParameterDto)
+  parameters: ParameterDto[];
 }

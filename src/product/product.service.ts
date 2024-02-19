@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
@@ -25,80 +21,49 @@ export class ProductService {
     const catalogStructure = {
       section: {
         connect: {
-          id: parseFloat(dto.sectionId),
+          id: dto.sectionId,
         },
       },
       ...(categoryId && {
         category: {
           connect: {
-            id: parseFloat(categoryId),
+            id: categoryId,
           },
         },
       }),
       ...(subcategoryId && {
         subcategory: {
           connect: {
-            id: parseFloat(subcategoryId),
+            id: subcategoryId,
           },
         },
       }),
     };
 
-    // Composition
-    let composition;
-    const compositionDTO = dto.composition;
-    if (compositionDTO) {
-      try {
-        composition = JSON.parse(compositionDTO);
-      } catch (error) {
-        this.logger.error({
-          method: 'create_try_catch_composition',
-          error,
-        });
-      }
-    }
-
-    // Parameters
-    let parameters;
-    const parametersDTO = dto.parameters;
-    if (parametersDTO) {
-      try {
-        parameters = JSON.parse(parametersDTO);
-      } catch (error) {
-        this.logger.error({
-          method: 'create_try_catch_parameters',
-          error,
-        });
-      }
-    }
-
-    if (!parameters) {
-      this.logger.error({
-        method: 'create',
-        error: { parameters: parametersDTO },
-      });
-
-      throw new BadRequestException('Please add the quantity of items');
-    }
+    // Convert composition to JSON
+    const compositionJson = dto.composition.map((comp) => ({
+      title: comp.title,
+      percentage: comp.percentage,
+    }));
 
     // Create
     try {
-      parameters.forEach(async (parameter: IParameter) => {
+      dto.parameters.forEach(async (parameter: IParameter) => {
         await this.prisma.product.create({
           data: {
             userId,
-            composition,
             name: dto.name,
             description: dto.description,
             brand: dto.brand,
             model: dto.model,
             articleSupplier: dto.articleSupplier,
-            priceWithoutDiscount: parseFloat(dto.priceWithoutDiscount),
-            finalPrice: parseFloat(dto.finalPrice),
+            priceWithoutDiscount: dto.priceWithoutDiscount,
+            finalPrice: dto.finalPrice,
             gender: dto.gender,
             image: '',
             imagePublicId: '',
             articleKoleso: '',
+            composition: compositionJson,
             color: parameter.color,
             quantity: parameter.quantity,
             size: parameter.size,
