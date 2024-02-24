@@ -13,7 +13,6 @@ import {
 } from 'class-validator';
 import { IsValidGenderConstraint } from '../validators';
 import { CompositionDto } from './composition.dto';
-import { ParameterDto } from './parameter.dto';
 
 export class CreateProductDto {
   @IsDefined()
@@ -23,10 +22,6 @@ export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
   name: string;
-
-  @IsDefined()
-  @IsUUID()
-  groupId: string;
 
   @IsString()
   @IsOptional()
@@ -39,18 +34,6 @@ export class CreateProductDto {
   @IsString()
   @IsOptional()
   model?: string;
-
-  @IsString()
-  @IsOptional()
-  articleSupplier?: string;
-
-  @IsNumber()
-  @IsDefined()
-  priceWithoutDiscount: number;
-
-  @IsNumber()
-  @IsDefined()
-  finalPrice: number;
 
   @IsOptional()
   @Validate(IsValidGenderConstraint)
@@ -73,10 +56,4 @@ export class CreateProductDto {
   @ValidateNested({ each: true })
   @Type(() => CompositionDto)
   composition?: CompositionDto[];
-
-  @IsArray()
-  @IsDefined()
-  @ValidateNested({ each: true })
-  @Type(() => ParameterDto)
-  parameters: ParameterDto[];
 }

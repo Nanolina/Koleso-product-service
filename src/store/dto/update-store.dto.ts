@@ -8,4 +8,8 @@ export class UpdateStoreDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  isRemoveLogo?: string; // 'true'
 }

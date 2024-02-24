@@ -4,7 +4,12 @@ import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto';
-import { IParameter } from './types';
+
+const includeVariants = {
+  include: {
+    variants: true,
+  },
+};
 
 @Injectable()
 export class ProductService {
@@ -48,34 +53,22 @@ export class ProductService {
 
     // Create
     try {
-      dto.parameters.forEach(async (parameter: IParameter) => {
-        await this.prisma.product.create({
-          data: {
-            userId,
-            name: dto.name,
-            groupId: dto.groupId,
-            description: dto.description,
-            brand: dto.brand,
-            model: dto.model,
-            articleSupplier: dto.articleSupplier,
-            priceWithoutDiscount: dto.priceWithoutDiscount,
-            finalPrice: dto.finalPrice,
-            gender: dto.gender,
-            image: '',
-            imagePublicId: '',
-            articleKoleso: '',
-            composition: compositionJson,
-            color: parameter.color,
-            quantity: parameter.quantity,
-            size: parameter.size,
-            store: {
-              connect: {
-                id: dto.storeId,
-              },
+      await this.prisma.product.create({
+        data: {
+          userId,
+          name: dto.name,
+          description: dto.description,
+          brand: dto.brand,
+          model: dto.model,
+          gender: dto.gender,
+          composition: compositionJson,
+          store: {
+            connect: {
+              id: dto.storeId,
             },
-            ...catalogStructure,
           },
-        });
+          ...catalogStructure,
+        },
       });
     } catch (error) {
       this.logger.error({ method: 'create', error });
@@ -89,15 +82,7 @@ export class ProductService {
       where: {
         userId,
       },
-    });
-  }
-
-  async findGroupIds(userId: string) {
-    return this.prisma.product.groupBy({
-      by: ['groupId', 'name', 'finalPrice', 'brand', 'model'],
-      where: {
-        userId,
-      },
+      ...includeVariants,
     });
   }
 
@@ -107,6 +92,7 @@ export class ProductService {
         id,
         userId,
       },
+      ...includeVariants,
     });
   }
 }

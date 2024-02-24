@@ -10,6 +10,12 @@ import { CloudinaryService } from './../cloudinary/cloudinary.service';
 import { UpdateStoreDto } from './dto';
 import { CreateStoreDto } from './dto/create-store.dto';
 
+const includeImage = {
+  include: {
+    image: true,
+  },
+};
+
 @Injectable()
 export class StoreService {
   constructor(
@@ -36,8 +42,14 @@ export class StoreService {
           userId,
           name: dto.name,
           description: dto.description,
-          logo: logoFromCloudinary?.url,
-          logoPublicId: logoFromCloudinary?.public_id,
+          ...(logo && {
+            image: {
+              create: {
+                url: logoFromCloudinary?.url,
+                publicId: logoFromCloudinary?.public_id,
+              },
+            },
+          }),
         },
       });
     } catch (error) {
@@ -52,6 +64,7 @@ export class StoreService {
       where: {
         userId,
       },
+      ...includeImage,
     });
   }
 
@@ -61,6 +74,7 @@ export class StoreService {
         id,
         userId,
       },
+      ...includeImage,
     });
   }
 
@@ -70,54 +84,70 @@ export class StoreService {
     userId: string,
     logo: Express.Multer.File,
   ) {
-    // Find a store
-    const storeFromDB = await this.prisma.store.findFirst({
+    // Find store in DB
+    const oldStore = await this.prisma.store.findFirst({
       where: {
         id,
         userId,
       },
+      ...includeImage,
     });
 
-    if (!storeFromDB) {
+    if (!oldStore) {
       throw new NotFoundException('Store not found, please try again');
     }
 
-    // Remove logo from Cloudinary
-    if (storeFromDB.logo && storeFromDB.logoPublicId) {
+    // Remove the old logo from Cloudinary if the logo changes
+    if (oldStore.image && (logo || dto.isRemoveLogo)) {
       try {
-        await this.cloudinaryService.deleteFile(storeFromDB.logoPublicId);
+        await this.cloudinaryService.deleteFile(oldStore.image.publicId);
       } catch (error) {
         this.logger.error({ method: 'update', error });
       }
     }
 
-    // Upload new logo to Cloudinary
     let logoFromCloudinary;
+    // Upload the new logo to Cloudinary if provided
     if (logo) {
       try {
         logoFromCloudinary = await this.cloudinaryService.uploadLogo(logo);
       } catch (error) {
         this.logger.error({ method: 'update', error });
+        throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
       }
     }
 
-    // Update store
+    // Update the store
     try {
       return await this.prisma.store.update({
         where: {
           id: id,
-          userId: userId,
         },
         data: {
           name: dto.name,
           description: dto.description,
-          logo: logoFromCloudinary?.url || '',
-          logoPublicId: logoFromCloudinary?.public_id || '',
+          image: logo
+            ? {
+                upsert: {
+                  create: {
+                    url: logoFromCloudinary.url,
+                    publicId: logoFromCloudinary.public_id,
+                  },
+                  update: {
+                    url: logoFromCloudinary.url,
+                    publicId: logoFromCloudinary.public_id,
+                  },
+                },
+              }
+            : dto.isRemoveLogo
+              ? {
+                  delete: true,
+                }
+              : {},
         },
       });
     } catch (error) {
       this.logger.error({ method: 'update', error });
-
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }
@@ -129,6 +159,7 @@ export class StoreService {
         id,
         userId,
       },
+      ...includeImage,
     });
 
     if (!storeFromDB) {
@@ -136,9 +167,9 @@ export class StoreService {
     }
 
     // Remove logo from Cloudinary
-    if (storeFromDB.logo && storeFromDB.logoPublicId) {
+    if (storeFromDB.image) {
       try {
-        await this.cloudinaryService.deleteFile(storeFromDB.logoPublicId);
+        await this.cloudinaryService.deleteFile(storeFromDB.image.publicId);
       } catch (error) {
         this.logger.error({ method: 'remove', error });
       }

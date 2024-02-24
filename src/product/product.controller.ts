@@ -28,11 +28,6 @@ export class ProductController {
     return this.productService.findAll(req.user.id);
   }
 
-  @Get('/group')
-  findGroupIds(@Req() req: Request) {
-    return this.productService.findGroupIds(req.user.id);
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request) {
     return this.productService.findOne(id, req.user.id);
