@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { IsValidColorConstraint } from '../validators';
 
-export class ParameterDto {
+export class VariantDto {
   @IsDefined()
   @IsUUID()
   id: string;
@@ -25,4 +25,16 @@ export class ParameterDto {
   @IsString()
   @IsOptional()
   size?: string;
+
+  @IsNumber()
+  @IsDefined()
+  priceWithoutDiscount: number;
+
+  @IsNumber()
+  @IsDefined()
+  finalPrice: number;
+
+  @IsString()
+  @IsOptional()
+  articleSupplier?: string;
 }

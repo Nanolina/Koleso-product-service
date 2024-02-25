@@ -53,7 +53,7 @@ export class ProductService {
 
     // Create
     try {
-      await this.prisma.product.create({
+      return await this.prisma.product.create({
         data: {
           userId,
           name: dto.name,
@@ -68,7 +68,19 @@ export class ProductService {
             },
           },
           ...catalogStructure,
+          variants: {
+            create: dto.variants.map((variant) => ({
+              color: variant.color,
+              size: variant.size,
+              quantity: variant.quantity,
+              priceWithoutDiscount: variant.priceWithoutDiscount,
+              finalPrice: variant.finalPrice,
+              articleSupplier: variant.articleSupplier,
+              articleKoleso: '',
+            })),
+          },
         },
+        ...includeVariants,
       });
     } catch (error) {
       this.logger.error({ method: 'create', error });
