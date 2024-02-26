@@ -13,7 +13,6 @@ import {
 } from 'class-validator';
 import { IsValidGenderConstraint } from '../validators';
 import { CompositionDto } from './composition.dto';
-import { VariantDto } from './variant.dto';
 
 export class CreateProductDto {
   @IsDefined()
@@ -57,10 +56,4 @@ export class CreateProductDto {
   @ValidateNested({ each: true })
   @Type(() => CompositionDto)
   composition?: CompositionDto[];
-
-  @IsArray()
-  @IsDefined()
-  @ValidateNested({ each: true })
-  @Type(() => VariantDto)
-  variants?: VariantDto[];
 }

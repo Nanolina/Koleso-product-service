@@ -1,9 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateProductDto } from './dto';
+import { CreateProductDto } from './dto/create-product.dto';
 
 const includeVariants = {
   include: {
@@ -15,7 +14,6 @@ const includeVariants = {
 export class ProductService {
   constructor(
     private prisma: PrismaService,
-    private cloudinaryService: CloudinaryService,
     private readonly logger: MyLogger,
   ) {}
 
@@ -68,17 +66,6 @@ export class ProductService {
             },
           },
           ...catalogStructure,
-          variants: {
-            create: dto.variants.map((variant) => ({
-              color: variant.color,
-              size: variant.size,
-              quantity: variant.quantity,
-              priceWithoutDiscount: variant.priceWithoutDiscount,
-              finalPrice: variant.finalPrice,
-              articleSupplier: variant.articleSupplier,
-              articleKoleso: '',
-            })),
-          },
         },
         ...includeVariants,
       });

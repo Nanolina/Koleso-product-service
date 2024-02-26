@@ -4,16 +4,11 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUUID,
   Validate,
 } from 'class-validator';
-import { IsValidColorConstraint } from '../validators';
+import { IsValidColorConstraint } from '../../product/validators';
 
 export class VariantDto {
-  @IsDefined()
-  @IsUUID()
-  id: string;
-
   @IsDefined()
   @Validate(IsValidColorConstraint)
   color: ColorType;

@@ -9,23 +9,36 @@ import {
   Req,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { CreateProductDto } from './dto';
+import { VariantDto } from '../variant/dto';
+import { VariantService } from '../variant/variant.service';
+import { CreateProductDto } from './dto/create-product.dto';
 import { ProductService } from './product.service';
 
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly variantService: VariantService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createProductDto: CreateProductDto, @Req() req: Request) {
-    console.log('createProductDto', createProductDto);
     return this.productService.create(createProductDto, req.user.id);
   }
 
   @Get()
   findAll(@Req() req: Request) {
     return this.productService.findAll(req.user.id);
+  }
+
+  @Post(':id/variants')
+  createVariants(
+    @Param('id') id: string,
+    @Body() createVariantsDto: VariantDto[],
+    @Req() req: Request,
+  ) {
+    return this.variantService.create(createVariantsDto, id, req.user.id);
   }
 
   @Get(':id')
