@@ -9,7 +9,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { VariantDto } from '../variant/dto';
+import { CreateVariantsDto } from '../variant/dto';
 import { VariantService } from '../variant/variant.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { ProductService } from './product.service';
@@ -35,7 +35,7 @@ export class ProductController {
   @Post(':id/variants')
   createVariants(
     @Param('id') id: string,
-    @Body() createVariantsDto: VariantDto[],
+    @Body() createVariantsDto: CreateVariantsDto,
     @Req() req: Request,
   ) {
     return this.variantService.create(createVariantsDto, id, req.user.id);

@@ -6,7 +6,7 @@ import {
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { VariantDto } from './dto';
+import { CreateVariantsDto } from './dto';
 
 @Injectable()
 export class VariantService {
@@ -15,7 +15,7 @@ export class VariantService {
     private readonly logger: MyLogger,
   ) {}
 
-  async create(variantsDto: VariantDto[], productId: string, userId: string) {
+  async create(dto: CreateVariantsDto, productId: string, userId: string) {
     const product = await this.prisma.product.findFirst({
       where: {
         userId,
@@ -29,7 +29,7 @@ export class VariantService {
       throw new NotFoundException('product not found');
     }
 
-    variantsDto.forEach(async (variant) => {
+    for (const variant of dto.variants) {
       try {
         await this.prisma.variant.create({
           data: {
@@ -46,8 +46,17 @@ export class VariantService {
       } catch (error) {
         this.logger.error({ method: 'create', error });
 
+        // if (
+        //   error instanceof Prisma.PrismaClientKnownRequestError &&
+        //   error.code === 'P2002'
+        // ) {
+        //   throw new ConflictException(
+        //     `A variant with the given details already exists`,
+        //   );
+        // }
+
         throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
       }
-    });
+    }
   }
 }
