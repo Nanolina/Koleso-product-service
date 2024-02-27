@@ -92,6 +92,9 @@ CREATE TABLE "Store" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Variant_articleKoleso_key" ON "Variant"("articleKoleso");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Variant_productId_color_articleKoleso_key" ON "Variant"("productId", "color", "articleKoleso");
 
 -- CreateIndex

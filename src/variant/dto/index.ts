@@ -1,1 +1,1 @@
-export { CreateVariantsDto } from './create-variants.dto';
+export { UpdateVariantsDto } from './create-variants.dto';

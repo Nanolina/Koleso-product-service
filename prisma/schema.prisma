@@ -39,7 +39,7 @@ model Variant {
   priceWithoutDiscount Float
   finalPrice           Float
   articleSupplier      String?
-  articleKoleso        String
+  articleKoleso        String    @unique
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
   images               Image[]
