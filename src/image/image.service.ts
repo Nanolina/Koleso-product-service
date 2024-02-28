@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ColorType } from '@prisma/client';
+import { VariantService } from 'src/variant/variant.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,6 +14,7 @@ export class ImageService {
     private readonly logger: MyLogger,
     private readonly cloudinaryService: CloudinaryService,
     private readonly productService: ProductService,
+    private readonly variantService: VariantService,
   ) {}
 
   async findAll(
@@ -60,26 +62,14 @@ export class ImageService {
     await this.productService.findOneWithoutVariants(productId, userId);
 
     for (const file of files) {
+      // change color to ColorType
       const colorType: ColorType | null = changeToColorType(file.fieldname);
-      if (!colorType) {
-        throw new Error(`Invalid color: ${file.fieldname}`);
-      }
 
-      // Find variant by color and product
-      const variant = await this.prisma.variant.findFirst({
-        where: { productId, color: colorType },
-      });
-
-      if (!variant) {
-        this.logger.error({
-          method: 'update',
-          error: `Variant not found for productId: ${productId} and color: ${colorType}`,
-        });
-
-        throw new BadRequestException(
-          `Variant not found for productId: ${productId} and color: ${colorType}`,
-        );
-      }
+      // Find all variants for this product and color
+      const variants = await this.variantService.findByProductIdAndColor(
+        productId,
+        colorType,
+      );
 
       // Upload the image to Cloudinary
       let imageFromCloudinary;
@@ -93,13 +83,16 @@ export class ImageService {
         }
       }
 
-      await this.prisma.image.create({
-        data: {
-          url: imageFromCloudinary?.url,
-          publicId: imageFromCloudinary?.public_id,
-          variantId: variant.id,
-        },
-      });
+      // Create new images
+      for (const variant of variants) {
+        await this.prisma.image.create({
+          data: {
+            url: imageFromCloudinary?.url,
+            publicId: imageFromCloudinary?.public_id,
+            variantId: variant.id,
+          },
+        });
+      }
     }
 
     return this.findAll(productId, userId, false);

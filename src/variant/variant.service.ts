@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { ColorType } from '@prisma/client';
 import { createHash } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
@@ -122,5 +127,24 @@ export class VariantService {
 
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
+  }
+
+  async findByProductIdAndColor(productId: string, color: ColorType) {
+    const variants = await this.prisma.variant.findMany({
+      where: { productId, color },
+    });
+
+    if (!variants.length) {
+      this.logger.error({
+        method: 'findByProductIdAndColor',
+        error: `Variants not found for productId: ${productId} and color: ${color}`,
+      });
+
+      throw new BadRequestException(
+        `Variants not found for productId: ${productId} and color: ${color}`,
+      );
+    }
+
+    return variants;
   }
 }
