@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ImageModule } from './image/image.module';
 import { LoggerModule } from './logger/logger.module';
 import { PrismaService } from './prisma/prisma.service';
 import { ProductModule } from './product/product.module';
@@ -18,6 +19,7 @@ import { VariantModule } from './variant/variant.module';
     CloudinaryModule,
     CatalogModule,
     VariantModule,
+    ImageModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

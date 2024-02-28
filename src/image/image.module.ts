@@ -3,10 +3,10 @@ import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProductService } from '../product/product.service';
-import { VariantService } from './variant.service';
+import { ImageService } from './image.service';
 
 @Module({
   imports: [LoggerModule, CloudinaryModule],
-  providers: [VariantService, PrismaService, ProductService],
+  providers: [ImageService, PrismaService, ProductService],
 })
-export class VariantModule {}
+export class ImageModule {}

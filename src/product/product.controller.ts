@@ -9,6 +9,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { ImageService } from '../image/image.service';
 import { UpdateVariantsDto } from '../variant/dto';
 import { VariantService } from '../variant/variant.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -19,6 +20,7 @@ export class ProductController {
   constructor(
     private readonly productService: ProductService,
     private readonly variantService: VariantService,
+    private readonly imageService: ImageService,
   ) {}
 
   @Post()
@@ -44,6 +46,11 @@ export class ProductController {
   @Get(':id/variants')
   findVariants(@Param('id') id: string, @Req() req: Request) {
     return this.variantService.findAll(id, req.user.id);
+  }
+
+  @Get(':id/images')
+  findImages(@Param('id') id: string, @Req() req: Request) {
+    return this.imageService.findAll(id, req.user.id);
   }
 
   @Get(':id')

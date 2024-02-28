@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -93,5 +97,23 @@ export class ProductService {
       },
       ...includeVariants,
     });
+  }
+
+  async findOneWithoutVariants(productId: string, userId: string) {
+    const product = await this.prisma.product.findFirst({
+      where: {
+        userId,
+        id: productId,
+      },
+    });
+
+    if (!product) {
+      this.logger.error({
+        method: 'findWithoutVariants',
+        error: 'product not found',
+      });
+
+      throw new NotFoundException('Product not found');
+    }
   }
 }

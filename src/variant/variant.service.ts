@@ -1,14 +1,11 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { ProductService } from '../product/product.service';
 import { UpdateVariantsDto } from './dto';
 
 @Injectable()
@@ -17,6 +14,7 @@ export class VariantService {
     private prisma: PrismaService,
     private readonly logger: MyLogger,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly productService: ProductService,
   ) {}
 
   createArticleKoleso(productId: string, userId: string) {
@@ -26,23 +24,8 @@ export class VariantService {
     return hash.substring(0, 10);
   }
 
-  async findProduct(productId: string, userId: string) {
-    const product = await this.prisma.product.findFirst({
-      where: {
-        userId,
-        id: productId,
-      },
-    });
-
-    if (!product) {
-      this.logger.error({ method: 'create', error: 'product not found' });
-
-      throw new NotFoundException('product not found');
-    }
-  }
-
   async update(dto: UpdateVariantsDto, productId: string, userId: string) {
-    await this.findProduct(productId, userId);
+    await this.productService.findOneWithoutVariants(productId, userId);
 
     // Get existing variants for the product
     const existingVariants = await this.prisma.variant.findMany({
@@ -101,7 +84,7 @@ export class VariantService {
   }
 
   async findAll(productId: string, userId: string) {
-    await this.findProduct(productId, userId);
+    await this.productService.findOneWithoutVariants(productId, userId);
 
     return this.prisma.variant.findMany({
       where: {

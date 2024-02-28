@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
+import { ImageService } from '../image/image.service';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { VariantService } from '../variant/variant.service';
@@ -10,6 +11,6 @@ import { ProductService } from './product.service';
 @Module({
   imports: [LoggerModule, AuthModule, CloudinaryModule],
   controllers: [ProductController],
-  providers: [ProductService, PrismaService, VariantService],
+  providers: [ProductService, PrismaService, VariantService, ImageService],
 })
 export class ProductModule {}
