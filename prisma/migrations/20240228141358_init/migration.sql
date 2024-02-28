@@ -46,10 +46,18 @@ CREATE TABLE "Image" (
     "id" TEXT NOT NULL,
     "url" TEXT NOT NULL,
     "publicId" TEXT,
-    "variantId" TEXT,
     "storeId" TEXT,
 
     CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "VariantImage" (
+    "id" TEXT NOT NULL,
+    "variantId" TEXT NOT NULL,
+    "imageId" TEXT NOT NULL,
+
+    CONSTRAINT "VariantImage_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -95,10 +103,10 @@ CREATE TABLE "Store" (
 CREATE UNIQUE INDEX "Variant_articleKoleso_key" ON "Variant"("articleKoleso");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Variant_productId_color_articleKoleso_key" ON "Variant"("productId", "color", "articleKoleso");
+CREATE UNIQUE INDEX "Image_storeId_key" ON "Image"("storeId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Image_storeId_key" ON "Image"("storeId");
+CREATE UNIQUE INDEX "VariantImage_variantId_imageId_key" ON "VariantImage"("variantId", "imageId");
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -119,7 +127,10 @@ ALTER TABLE "Variant" ADD CONSTRAINT "Variant_productId_fkey" FOREIGN KEY ("prod
 ALTER TABLE "Image" ADD CONSTRAINT "Image_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Image" ADD CONSTRAINT "Image_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "Variant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "VariantImage" ADD CONSTRAINT "VariantImage_variantId_fkey" FOREIGN KEY ("variantId") REFERENCES "Variant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "VariantImage" ADD CONSTRAINT "VariantImage_imageId_fkey" FOREIGN KEY ("imageId") REFERENCES "Image"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Category" ADD CONSTRAINT "Category_sectionId_fkey" FOREIGN KEY ("sectionId") REFERENCES "Section"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

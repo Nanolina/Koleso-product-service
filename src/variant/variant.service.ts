@@ -96,7 +96,13 @@ export class VariantService {
   async delete(id: string) {
     // Get all images associated with the variant to be deleted
     const images = await this.prisma.image.findMany({
-      where: { variantId: id },
+      where: {
+        variants: {
+          some: {
+            variantId: id,
+          },
+        },
+      },
     });
 
     // Delete images from Cloudinary
