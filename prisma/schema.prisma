@@ -31,38 +31,29 @@ model Product {
 }
 
 model Variant {
-  id                   String         @id @default(uuid())
+  id                   String    @id @default(uuid())
   productId            String
   color                ColorType
-  size                 String?        @db.VarChar(20)
+  size                 String?   @db.VarChar(20)
   quantity             Int
   priceWithoutDiscount Float
   finalPrice           Float
   articleSupplier      String?
-  articleKoleso        String         @unique
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
-  product              Product        @relation(fields: [productId], references: [id])
-  images               VariantImage[]
+  articleKoleso        String    @unique
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  images               Image[]
+  product              Product   @relation(fields: [productId], references: [id])
 }
 
 model Image {
-  id       String         @id @default(uuid())
-  url      String
-  publicId String?
-  storeId  String?        @unique
-  store    Store?         @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  variants VariantImage[]
-}
-
-model VariantImage {
-  id        String  @id @default(uuid())
-  variantId String
-  imageId   String
-  image     Image   @relation(fields: [imageId], references: [id])
-  variant   Variant @relation(fields: [variantId], references: [id])
-
-  @@unique([variantId, imageId])
+  id        String   @id @default(uuid())
+  url       String
+  publicId  String?
+  storeId   String?  @unique
+  variantId String?
+  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  variant   Variant? @relation(fields: [variantId], references: [id])
 }
 
 model Section {

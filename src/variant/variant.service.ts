@@ -97,11 +97,7 @@ export class VariantService {
     // Get all images associated with the variant to be deleted
     const images = await this.prisma.image.findMany({
       where: {
-        variants: {
-          some: {
-            variantId: id,
-          },
-        },
+        variantId: id,
       },
     });
 

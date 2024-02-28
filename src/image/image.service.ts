@@ -6,20 +6,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ProductService } from '../product/product.service';
 import { changeToColorType } from '../utils';
 
-const getWhereProductId = (productId) => {
-  return {
-    where: {
-      variants: {
-        some: {
-          variant: {
-            productId,
-          },
-        },
-      },
-    },
-  };
-};
-
 @Injectable()
 export class ImageService {
   constructor(
@@ -29,45 +15,40 @@ export class ImageService {
     private readonly productService: ProductService,
   ) {}
 
-  async findAll(productId: string, userId: string) {
-    await this.productService.findOneWithoutVariants(productId, userId);
+  async findAll(
+    productId: string,
+    userId: string,
+    isShouldVerify: boolean = true,
+  ) {
+    if (isShouldVerify) {
+      await this.productService.findOneWithoutVariants(productId, userId);
+    }
 
-    const images = await this.prisma.image.findMany({
-      ...getWhereProductId(productId),
+    const variants = await this.prisma.variant.findMany({
+      where: {
+        productId,
+      },
       include: {
-        variants: {
-          select: {
-            variant: {
-              select: {
-                color: true,
-              },
-            },
-          },
-        },
+        images: true,
       },
     });
 
-    // Structuring data by color
-    // Use Set to store unique URLs
     const colorMap = new Map<ColorType, Set<string>>();
-    images.forEach((image) => {
-      image.variants.forEach(({ variant }) => {
+    variants.forEach((variant) => {
+      variant.images.forEach((image) => {
         const { color } = variant;
         if (!colorMap.has(color)) {
-          // Initialize with an empty Set
           colorMap.set(color, new Set());
         }
-        // Add the URL to Set
         colorMap.get(color)?.add(image.url);
       });
     });
 
-    // Convert Map to an array of objects
-    const result = Array.from(colorMap, ([color, urlSet]) => ({
+    const result = Array.from(colorMap).map(([color, urls]) => ({
       color,
-      // Convert Set back to an array
-      files: Array.from(urlSet),
+      files: Array.from(urls),
     }));
+
     return result;
   }
 
@@ -78,35 +59,25 @@ export class ImageService {
   ) {
     await this.productService.findOneWithoutVariants(productId, userId);
 
-    const imagesByColor: { [color: string]: string[] } = {};
-
     for (const file of files) {
       const colorType: ColorType | null = changeToColorType(file.fieldname);
       if (!colorType) {
         throw new Error(`Invalid color: ${file.fieldname}`);
       }
 
-      // Ensure the array exists for the color
-      if (!imagesByColor[colorType]) {
-        imagesByColor[colorType] = [];
-      }
-
-      // Find all variants for the product with the specified color
-      const variants = await this.prisma.variant.findMany({
-        where: {
-          productId,
-          color: colorType,
-        },
+      // Find variant by color and product
+      const variant = await this.prisma.variant.findFirst({
+        where: { productId, color: colorType },
       });
 
-      if (!variants.length) {
+      if (!variant) {
         this.logger.error({
           method: 'update',
-          error: `Variants not found for productId: ${productId} and color: ${colorType}`,
+          error: `Variant not found for productId: ${productId} and color: ${colorType}`,
         });
 
         throw new BadRequestException(
-          `Variants not found for productId: ${productId} and color: ${colorType}`,
+          `Variant not found for productId: ${productId} and color: ${colorType}`,
         );
       }
 
@@ -122,32 +93,15 @@ export class ImageService {
         }
       }
 
-      console.log('imageFromCloudinary', imageFromCloudinary);
-
-      const newImage = await this.prisma.image.create({
+      await this.prisma.image.create({
         data: {
           url: imageFromCloudinary?.url,
           publicId: imageFromCloudinary?.public_id,
+          variantId: variant.id,
         },
       });
-
-      // Associate the new image with each variant
-      for (const variant of variants) {
-        await this.prisma.variantImage.create({
-          data: {
-            variantId: variant.id,
-            imageId: newImage.id,
-          },
-        });
-      }
-
-      // Add the new image URL to the array for the color
-      imagesByColor[colorType].push(newImage.url);
     }
 
-    // Convert imagesByColor object to an array of objects
-    return Object.entries(imagesByColor).map(([color, images]) => {
-      return { color, images };
-    });
+    return this.findAll(productId, userId, false);
   }
 }
