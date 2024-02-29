@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Req,
   UploadedFiles,
@@ -17,6 +18,7 @@ import { ImageService } from '../image/image.service';
 import { UpdateVariantsDto } from '../variant/dto';
 import { VariantService } from '../variant/variant.service';
 import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
 
 @Controller('product')
@@ -71,5 +73,14 @@ export class ProductController {
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request) {
     return this.productService.findOne(id, req.user.id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+    @Req() req: Request,
+  ) {
+    return this.productService.update(updateProductDto, id, req.user.id);
   }
 }
