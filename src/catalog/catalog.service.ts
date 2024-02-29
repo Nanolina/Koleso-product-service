@@ -10,19 +10,9 @@ export class CatalogService {
       include: {
         categories: {
           include: {
-            subcategories: {
-              orderBy: {
-                name: 'asc',
-              },
-            },
-          },
-          orderBy: {
-            name: 'asc',
+            subcategories: true,
           },
         },
-      },
-      orderBy: {
-        name: 'asc',
       },
     });
   }
