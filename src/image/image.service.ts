@@ -4,8 +4,8 @@ import { VariantService } from 'src/variant/variant.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { ProductService } from '../product/product.service';
 import { changeToColorType } from '../utils';
+import { UpdateImagesForVariantsDto } from './dto';
 
 @Injectable()
 export class ImageService {
@@ -13,22 +13,16 @@ export class ImageService {
     private prisma: PrismaService,
     private readonly logger: MyLogger,
     private readonly cloudinaryService: CloudinaryService,
-    private readonly productService: ProductService,
     private readonly variantService: VariantService,
   ) {}
 
-  async findAll(
-    productId: string,
-    userId: string,
-    isShouldVerify: boolean = true,
-  ) {
-    if (isShouldVerify) {
-      await this.productService.findOneWithoutVariants(productId, userId);
-    }
-
+  async findAll(productId: string, userId: string) {
     const variants = await this.prisma.variant.findMany({
       where: {
         productId,
+        product: {
+          userId,
+        },
       },
       include: {
         images: true,
@@ -57,12 +51,36 @@ export class ImageService {
   async update(
     productId: string,
     files: Array<Express.Multer.File>,
+    existingImagesURL: UpdateImagesForVariantsDto,
     userId: string,
   ) {
-    await this.productService.findOneWithoutVariants(productId, userId);
+    const existingImages = await this.prisma.image.findMany({
+      where: {
+        variant: {
+          productId,
+          product: {
+            userId,
+          },
+        },
+      },
+    });
+
+    // Determine which images should be deleted
+    const imagesToDelete = existingImages.filter(({ url }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      return !Object.entries(existingImagesURL).some(([color, files]) => {
+        return files.includes(url);
+      });
+    });
+
+    // Deleting images from Cloudinary and database
+    for (const { id, publicId } of imagesToDelete) {
+      await this.cloudinaryService.deleteFile(publicId);
+      await this.prisma.image.delete({ where: { id } });
+    }
 
     for (const file of files) {
-      // change color to ColorType
+      // Change color to ColorType
       const colorType: ColorType | null = changeToColorType(file.fieldname);
 
       // Find all variants for this product and color
@@ -76,25 +94,24 @@ export class ImageService {
       if (file) {
         try {
           imageFromCloudinary = await this.cloudinaryService.uploadImage(file);
+          // Create new images
+          for (const variant of variants) {
+            await this.prisma.image.create({
+              data: {
+                url: imageFromCloudinary?.url,
+                publicId: imageFromCloudinary?.public_id,
+                variantId: variant.id,
+              },
+            });
+          }
         } catch (error) {
           this.logger.error({ method: 'update', error });
           // Skip this file if upload failed
           continue;
         }
       }
-
-      // Create new images
-      for (const variant of variants) {
-        await this.prisma.image.create({
-          data: {
-            url: imageFromCloudinary?.url,
-            publicId: imageFromCloudinary?.public_id,
-            variantId: variant.id,
-          },
-        });
-      }
     }
 
-    return this.findAll(productId, userId, false);
+    return this.findAll(productId, userId);
   }
 }

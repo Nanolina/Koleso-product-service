@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
+import { UpdateImagesForVariantsDto } from '../image/dto';
 import { ImageService } from '../image/image.service';
 import { UpdateVariantsDto } from '../variant/dto';
 import { VariantService } from '../variant/variant.service';
@@ -55,10 +56,11 @@ export class ProductController {
   @UseInterceptors(AnyFilesInterceptor())
   async updateProductImages(
     @Param('id') id: string,
+    @Body() existingImagesURL: UpdateImagesForVariantsDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Req() req: Request,
   ) {
-    return this.imageService.update(id, files, req.user.id);
+    return this.imageService.update(id, files, existingImagesURL, req.user.id);
   }
 
   @Get(':id/images')

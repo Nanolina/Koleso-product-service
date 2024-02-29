@@ -11,7 +11,7 @@ export class CloudinaryService {
       (resolve, reject) => {
         const upload = v2.uploader.upload_stream(
           {
-            folder: 'logos',
+            folder: 'stores',
           },
           (error, result) => {
             if (error) return reject(error);

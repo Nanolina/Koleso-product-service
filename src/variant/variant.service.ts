@@ -10,7 +10,6 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { ProductService } from '../product/product.service';
 import { UpdateVariantsDto } from './dto';
 
 @Injectable()
@@ -19,7 +18,6 @@ export class VariantService {
     private prisma: PrismaService,
     private readonly logger: MyLogger,
     private readonly cloudinaryService: CloudinaryService,
-    private readonly productService: ProductService,
   ) {}
 
   createArticleKoleso(productId: string, userId: string) {
@@ -30,11 +28,14 @@ export class VariantService {
   }
 
   async update(dto: UpdateVariantsDto, productId: string, userId: string) {
-    await this.productService.findOneWithoutVariants(productId, userId);
-
     // Get existing variants for the product
     const existingVariants = await this.prisma.variant.findMany({
-      where: { productId },
+      where: {
+        productId,
+        product: {
+          userId,
+        },
+      },
     });
 
     // Updating and creating variants
@@ -89,11 +90,12 @@ export class VariantService {
   }
 
   async findAll(productId: string, userId: string) {
-    await this.productService.findOneWithoutVariants(productId, userId);
-
     return this.prisma.variant.findMany({
       where: {
         productId,
+        product: {
+          userId,
+        },
       },
     });
   }
