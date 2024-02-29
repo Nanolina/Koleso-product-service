@@ -31,7 +31,7 @@ export class StoreService {
       try {
         logoFromCloudinary = await this.cloudinaryService.uploadLogo(logo);
       } catch (error) {
-        this.logger.error({ method: 'create', error });
+        this.logger.error({ method: 'store-create-cloudinary', error });
       }
     }
 
@@ -53,7 +53,7 @@ export class StoreService {
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'create', error });
+      this.logger.error({ method: 'store-create', error });
 
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
@@ -102,7 +102,10 @@ export class StoreService {
       try {
         await this.cloudinaryService.deleteFile(oldStore.image.publicId);
       } catch (error) {
-        this.logger.error({ method: 'update', error });
+        this.logger.error({
+          method: 'store-update-cloudinary-deleteFile',
+          error,
+        });
       }
     }
 
@@ -112,7 +115,10 @@ export class StoreService {
       try {
         logoFromCloudinary = await this.cloudinaryService.uploadLogo(logo);
       } catch (error) {
-        this.logger.error({ method: 'update', error });
+        this.logger.error({
+          method: 'store-update-cloudinary-uploadLogo',
+          error,
+        });
         throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
       }
     }
@@ -147,7 +153,7 @@ export class StoreService {
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'update', error });
+      this.logger.error({ method: 'store-update', error });
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }
@@ -171,7 +177,7 @@ export class StoreService {
       try {
         await this.cloudinaryService.deleteFile(storeFromDB.image.publicId);
       } catch (error) {
-        this.logger.error({ method: 'remove', error });
+        this.logger.error({ method: 'store-remove-cloudinary', error });
       }
     }
 
@@ -184,7 +190,7 @@ export class StoreService {
         },
       });
     } catch (error) {
-      this.logger.error({ method: 'remove', error });
+      this.logger.error({ method: 'store-remove', error });
 
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }

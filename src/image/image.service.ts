@@ -84,7 +84,7 @@ export class ImageService {
       const colorType: ColorType | null = changeToColorType(file.fieldname);
 
       // Find all variants for this product and color
-      const variants = await this.variantService.findByProductIdAndColor(
+      const variants = await this.variantService.findAllByProductIdAndColor(
         productId,
         colorType,
       );
@@ -105,7 +105,7 @@ export class ImageService {
             });
           }
         } catch (error) {
-          this.logger.error({ method: 'update', error });
+          this.logger.error({ method: 'image-update', error });
           // Skip this file if upload failed
           continue;
         }

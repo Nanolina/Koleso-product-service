@@ -4,9 +4,13 @@ import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 
-const includeVariants = {
+const includeVariantsWithImages = {
   include: {
-    variants: true,
+    variants: {
+      include: {
+        images: true,
+      },
+    },
   },
 };
 
@@ -58,7 +62,7 @@ export class ProductService {
           description: dto.description,
           brand: dto.brand,
           model: dto.model,
-          gender: dto.gender,
+          gender: dto.gender || null,
           composition: compositionJson,
           store: {
             connect: {
@@ -67,10 +71,10 @@ export class ProductService {
           },
           ...catalogStructure,
         },
-        ...includeVariants,
+        ...includeVariantsWithImages,
       });
     } catch (error) {
-      this.logger.error({ method: 'create', error });
+      this.logger.error({ method: 'product-create', error });
 
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
@@ -81,7 +85,7 @@ export class ProductService {
       where: {
         userId,
       },
-      ...includeVariants,
+      ...includeVariantsWithImages,
     });
   }
 
@@ -91,7 +95,7 @@ export class ProductService {
         id,
         userId,
       },
-      ...includeVariants,
+      ...includeVariantsWithImages,
     });
   }
 }

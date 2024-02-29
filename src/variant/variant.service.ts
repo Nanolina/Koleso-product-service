@@ -114,7 +114,7 @@ export class VariantService {
         try {
           await this.cloudinaryService.deleteFile(image.publicId);
         } catch (error) {
-          this.logger.error({ method: 'delete-cloudinary', error });
+          this.logger.error({ method: 'variant-delete-cloudinary', error });
         }
       }
     }
@@ -125,20 +125,20 @@ export class VariantService {
         where: { id },
       });
     } catch (error) {
-      this.logger.error({ method: 'delete', error });
+      this.logger.error({ method: 'variant-delete', error });
 
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }
 
-  async findByProductIdAndColor(productId: string, color: ColorType) {
+  async findAllByProductIdAndColor(productId: string, color: ColorType) {
     const variants = await this.prisma.variant.findMany({
       where: { productId, color },
     });
 
     if (!variants.length) {
       this.logger.error({
-        method: 'findByProductIdAndColor',
+        method: 'findAllByProductIdAndColor',
         error: `Variants not found for productId: ${productId} and color: ${color}`,
       });
 
