@@ -110,20 +110,32 @@ export class ProductService {
           id: dto.sectionId,
         },
       },
-      ...(categoryId && {
-        category: {
-          connect: {
-            id: categoryId,
-          },
-        },
-      }),
-      ...(subcategoryId && {
-        subcategory: {
-          connect: {
-            id: subcategoryId,
-          },
-        },
-      }),
+      ...(categoryId
+        ? {
+            category: {
+              connect: {
+                id: categoryId,
+              },
+            },
+          }
+        : {
+            category: {
+              disconnect: {},
+            },
+          }),
+      ...(subcategoryId
+        ? {
+            subcategory: {
+              connect: {
+                id: subcategoryId,
+              },
+            },
+          }
+        : {
+            subcategory: {
+              disconnect: {},
+            },
+          }),
     };
 
     // Convert composition to JSON
@@ -151,7 +163,9 @@ export class ProductService {
               id: dto.storeId,
             },
           },
-          ...catalogStructure,
+          ...(dto.sectionId && {
+            ...catalogStructure,
+          }),
         },
         ...includeVariantsWithImages,
       });
