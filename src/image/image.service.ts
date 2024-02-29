@@ -42,7 +42,7 @@ export class ImageService {
 
     const result = Array.from(colorMap).map(([color, urls]) => ({
       color,
-      files: Array.from(urls),
+      images: Array.from(urls),
     }));
 
     return result;
@@ -68,8 +68,8 @@ export class ImageService {
     // Determine which images should be deleted
     const imagesToDelete = existingImages.filter(({ url }) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      return !Object.entries(existingImagesURL).some(([color, files]) => {
-        return files.includes(url);
+      return !Object.entries(existingImagesURL).some(([color, images]) => {
+        return images.includes(url);
       });
     });
 
