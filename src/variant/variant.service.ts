@@ -112,17 +112,6 @@ export class VariantService {
     });
   }
 
-  async findAll(productId: string, userId: string) {
-    return this.prisma.variant.findMany({
-      where: {
-        productId,
-        product: {
-          userId,
-        },
-      },
-    });
-  }
-
   async delete(id: string) {
     // Get all images associated with the variant to be deleted
     const images = await this.prisma.image.findMany({

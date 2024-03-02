@@ -5,13 +5,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 
-const includeVariantsWithImages = {
+const includeVariants = {
   include: {
-    variants: {
-      include: {
-        images: true,
-      },
-    },
+    variants: true,
   },
 };
 
@@ -72,7 +68,7 @@ export class ProductService {
           },
           ...catalogStructure,
         },
-        ...includeVariantsWithImages,
+        ...includeVariants,
       });
     } catch (error) {
       this.logger.error({ method: 'product-create', error });
@@ -86,7 +82,17 @@ export class ProductService {
       where: {
         userId,
       },
-      ...includeVariantsWithImages,
+      include: {
+        variants: {
+          include: {
+            images: {
+              select: {
+                url: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -96,7 +102,7 @@ export class ProductService {
         id,
         userId,
       },
-      ...includeVariantsWithImages,
+      ...includeVariants,
     });
   }
 
@@ -167,7 +173,7 @@ export class ProductService {
             ...catalogStructure,
           }),
         },
-        ...includeVariantsWithImages,
+        ...includeVariants,
       });
     } catch (error) {
       this.logger.error({ method: 'product-update', error });

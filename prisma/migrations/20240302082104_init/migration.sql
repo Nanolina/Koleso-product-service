@@ -2,7 +2,7 @@
 CREATE TYPE "GenderType" AS ENUM ('Male', 'Female');
 
 -- CreateEnum
-CREATE TYPE "ColorType" AS ENUM ('Aquamarine', 'Beige', 'Black', 'Blue', 'Brown', 'Cherry', 'Cream', 'Emerald', 'Fuchsia', 'Golden', 'Green', 'Grey', 'LightBlue', 'Lilac', 'Maroon', 'Olive', 'Orange', 'Pink', 'Purple', 'Raspberry', 'Red', 'Sandy', 'Silver', 'Turquoise', 'Violet', 'White', 'Yellow', 'Transparent');
+CREATE TYPE "ColorType" AS ENUM ('Aquamarine', 'Beige', 'Black', 'Blue', 'Brown', 'Cherry', 'Cream', 'Emerald', 'Fuchsia', 'Golden', 'Green', 'Grey', 'LightBlue', 'Lilac', 'Maroon', 'Olive', 'Orange', 'Pink', 'Purple', 'Raspberry', 'Red', 'Sandy', 'Silver', 'Turquoise', 'White', 'Yellow', 'Transparent');
 
 -- CreateTable
 CREATE TABLE "Product" (
@@ -18,8 +18,9 @@ CREATE TABLE "Product" (
     "composition" JSONB,
     "storeId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -35,6 +36,7 @@ CREATE TABLE "Variant" (
     "finalPrice" DOUBLE PRECISION NOT NULL,
     "articleSupplier" TEXT,
     "articleKoleso" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -48,6 +50,8 @@ CREATE TABLE "Image" (
     "publicId" TEXT,
     "storeId" TEXT,
     "variantId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
 );
@@ -87,6 +91,8 @@ CREATE TABLE "Store" (
     "name" VARCHAR(255) NOT NULL,
     "description" TEXT,
     "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Store_pkey" PRIMARY KEY ("id")
 );

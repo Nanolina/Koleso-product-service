@@ -49,11 +49,6 @@ export class ProductController {
     return this.variantService.update(updateVariantsDto, id, req.user.id);
   }
 
-  @Get(':id/variants')
-  findVariants(@Param('id') id: string, @Req() req: Request) {
-    return this.variantService.findAll(id, req.user.id);
-  }
-
   @Post(':id/images')
   @UseInterceptors(AnyFilesInterceptor())
   async updateProductImages(
