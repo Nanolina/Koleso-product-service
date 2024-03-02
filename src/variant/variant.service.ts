@@ -27,6 +27,26 @@ export class VariantService {
     return hash.substring(0, 10);
   }
 
+  async generateUniqueArticleKoleso(
+    productId: string,
+    userId: string,
+  ): Promise<string> {
+    let uniqueArticle = this.createArticleKoleso(productId, userId);
+    let exists = await this.prisma.variant.findUnique({
+      where: { articleKoleso: uniqueArticle },
+    });
+
+    // While there is a variant with such an articleKoleso, generate a new one
+    while (exists) {
+      uniqueArticle = this.createArticleKoleso(productId, userId);
+      exists = await this.prisma.variant.findUnique({
+        where: { articleKoleso: uniqueArticle },
+      });
+    }
+
+    return uniqueArticle;
+  }
+
   async update(dto: UpdateVariantsDto, productId: string, userId: string) {
     // Get existing variants for the product
     const existingVariants = await this.prisma.variant.findMany({
@@ -64,7 +84,10 @@ export class VariantService {
             quantity: variantDto.quantity,
             articleSupplier: variantDto.articleSupplier,
             size: variantDto.size,
-            articleKoleso: this.createArticleKoleso(productId, userId),
+            articleKoleso: await this.generateUniqueArticleKoleso(
+              productId,
+              userId,
+            ),
           },
         });
       }
