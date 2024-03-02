@@ -11,7 +11,7 @@ const imageFileFilter = (req, file, callback) => {
   callback(null, true);
 };
 
-export const logoUploadOptions = {
+export const imageUploadOptions = {
   fileFilter: imageFileFilter,
   limits: { fileSize: 512000 }, // 500KB
 };

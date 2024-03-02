@@ -1,2 +1,2 @@
 export { changeToColorType } from './change-to-color-type';
-export { logoUploadOptions } from './file-upload.utils';
+export { imageUploadOptions } from './file-upload.utils';

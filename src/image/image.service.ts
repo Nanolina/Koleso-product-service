@@ -95,7 +95,8 @@ export class ImageService {
       let imageFromCloudinary;
       if (file) {
         try {
-          imageFromCloudinary = await this.cloudinaryService.uploadImage(file);
+          imageFromCloudinary =
+            await this.cloudinaryService.uploadProductImage(file);
           // Create new images
           for (const variant of variants) {
             await this.prisma.image.create({

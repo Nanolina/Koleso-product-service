@@ -24,12 +24,17 @@ export class StoreService {
     private readonly logger: MyLogger,
   ) {}
 
-  async create(dto: CreateStoreDto, userId: string, logo: Express.Multer.File) {
-    // Upload a logo
-    let logoFromCloudinary;
-    if (logo) {
+  async create(
+    dto: CreateStoreDto,
+    userId: string,
+    image: Express.Multer.File,
+  ) {
+    // Upload image
+    let imageFromCloudinary;
+    if (image) {
       try {
-        logoFromCloudinary = await this.cloudinaryService.uploadLogo(logo);
+        imageFromCloudinary =
+          await this.cloudinaryService.uploadStoreImage(image);
       } catch (error) {
         this.logger.error({ method: 'store-create-cloudinary', error });
       }
@@ -42,11 +47,11 @@ export class StoreService {
           userId,
           name: dto.name,
           description: dto.description,
-          ...(logo && {
+          ...(image && {
             image: {
               create: {
-                url: logoFromCloudinary?.url,
-                publicId: logoFromCloudinary?.public_id,
+                url: imageFromCloudinary?.url,
+                publicId: imageFromCloudinary?.public_id,
               },
             },
           }),
@@ -116,8 +121,8 @@ export class StoreService {
       throw new NotFoundException('Store not found, please try again');
     }
 
-    // Remove the old logo from Cloudinary if the logo changes
-    if (oldStore.image && (image || dto.isRemoveLogo)) {
+    // Remove the old image from Cloudinary if the image changes
+    if (oldStore.image && (image || dto.isRemoveImage)) {
       try {
         await this.cloudinaryService.deleteFile(oldStore.image.publicId);
       } catch (error) {
@@ -129,13 +134,14 @@ export class StoreService {
     }
 
     let imageFromCloudinary;
-    // Upload the new logo to Cloudinary if provided
+    // Upload the new image to Cloudinary if provided
     if (image) {
       try {
-        imageFromCloudinary = await this.cloudinaryService.uploadLogo(image);
+        imageFromCloudinary =
+          await this.cloudinaryService.uploadStoreImage(image);
       } catch (error) {
         this.logger.error({
-          method: 'store-update-cloudinary-uploadLogo',
+          method: 'store-update-cloudinary-uploadStoreImage',
           error,
         });
         throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
@@ -164,7 +170,7 @@ export class StoreService {
                   },
                 },
               }
-            : dto.isRemoveLogo
+            : dto.isRemoveImage
               ? {
                   delete: true,
                 }

@@ -4,7 +4,7 @@ import * as streamifier from 'streamifier';
 
 @Injectable()
 export class CloudinaryService {
-  uploadLogo(
+  uploadStoreImage(
     file: Express.Multer.File,
   ): Promise<UploadApiErrorResponse | UploadApiResponse> {
     return new Promise<UploadApiErrorResponse | UploadApiResponse>(
@@ -24,7 +24,7 @@ export class CloudinaryService {
     );
   }
 
-  uploadImage(
+  uploadProductImage(
     file: Express.Multer.File,
   ): Promise<UploadApiErrorResponse | UploadApiResponse> {
     return new Promise<UploadApiErrorResponse | UploadApiResponse>(

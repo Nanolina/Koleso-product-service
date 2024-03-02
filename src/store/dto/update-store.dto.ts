@@ -11,5 +11,5 @@ export class UpdateStoreDto {
 
   @IsOptional()
   @IsString()
-  isRemoveLogo?: string; // 'true'
+  isRemoveImage?: string; // 'true'
 }

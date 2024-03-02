@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
-import { logoUploadOptions } from 'src/utils';
+import { imageUploadOptions } from 'src/utils';
 import { UpdateStoreDto } from './dto';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { StoreService } from './store.service';
@@ -25,14 +25,14 @@ export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('logo', logoUploadOptions))
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   @HttpCode(HttpStatus.CREATED)
   create(
     @Body() createStoreDto: CreateStoreDto,
-    @UploadedFile() logo: Express.Multer.File,
+    @UploadedFile() image: Express.Multer.File,
     @Req() req: Request,
   ) {
-    return this.storeService.create(createStoreDto, req.user.id, logo);
+    return this.storeService.create(createStoreDto, req.user.id, image);
   }
 
   @Get()
@@ -46,7 +46,7 @@ export class StoreController {
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('image', logoUploadOptions))
+  @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   update(
     @Param('id') id: string,
     @Body() updateStoreDto: UpdateStoreDto,
