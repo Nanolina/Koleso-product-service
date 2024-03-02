@@ -91,6 +91,7 @@ CREATE TABLE "Store" (
     "name" VARCHAR(255) NOT NULL,
     "description" TEXT,
     "userId" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

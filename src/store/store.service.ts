@@ -63,6 +63,7 @@ export class StoreService {
     return this.prisma.store.findMany({
       where: {
         userId,
+        isActive: true,
       },
       ...includeImage,
     });
@@ -73,6 +74,7 @@ export class StoreService {
       where: {
         id,
         userId,
+        isActive: true,
       },
       ...includeImage,
     });
@@ -89,6 +91,7 @@ export class StoreService {
       where: {
         id,
         userId,
+        isActive: true,
       },
       ...includeImage,
     });
@@ -159,34 +162,14 @@ export class StoreService {
   }
 
   async remove(id: string, userId: string) {
-    // Find a store
-    const storeFromDB = await this.prisma.store.findFirst({
-      where: {
-        id,
-        userId,
-      },
-      ...includeImage,
-    });
-
-    if (!storeFromDB) {
-      throw new NotFoundException('Store not found, please try again');
-    }
-
-    // Remove logo from Cloudinary
-    if (storeFromDB.image) {
-      try {
-        await this.cloudinaryService.deleteFile(storeFromDB.image.publicId);
-      } catch (error) {
-        this.logger.error({ method: 'store-remove-cloudinary', error });
-      }
-    }
-
-    // Remove store
     try {
-      return await this.prisma.store.delete({
+      return await this.prisma.store.update({
         where: {
           id: id,
           userId: userId,
+        },
+        data: {
+          isActive: false,
         },
       });
     } catch (error) {
