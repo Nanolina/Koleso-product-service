@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -7,7 +11,11 @@ import { UpdateProductDto } from './dto/update-product.dto';
 
 const includeVariants = {
   include: {
-    variants: true,
+    variants: {
+      where: {
+        isActive: true,
+      },
+    },
   },
 };
 
@@ -81,6 +89,7 @@ export class ProductService {
     return this.prisma.product.findMany({
       where: {
         userId,
+        isActive: true,
       },
       include: {
         variants: {
@@ -97,13 +106,25 @@ export class ProductService {
   }
 
   async findOne(id: string, userId: string) {
-    return this.prisma.product.findFirst({
+    const product = await this.prisma.product.findFirst({
       where: {
         id,
         userId,
+        isActive: true,
       },
       ...includeVariants,
     });
+
+    if (!product) {
+      this.logger.error({
+        method: 'product-findOne',
+        error: 'Product not found',
+      });
+
+      throw new NotFoundException('Product not found');
+    }
+
+    return product;
   }
 
   async update(dto: UpdateProductDto, id: string, userId: string) {
@@ -156,6 +177,7 @@ export class ProductService {
         where: {
           id,
           userId,
+          isActive: true,
         },
         data: {
           name: dto.name,
@@ -177,6 +199,52 @@ export class ProductService {
       });
     } catch (error) {
       this.logger.error({ method: 'product-update', error });
+
+      throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
+    }
+  }
+
+  async remove(id: string, userId: string) {
+    try {
+      await this.prisma.product.update({
+        where: {
+          id: id,
+          userId: userId,
+        },
+        data: {
+          isActive: false,
+        },
+      });
+    } catch (error) {
+      this.logger.error({ method: 'product-remove', error });
+
+      throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
+    }
+  }
+
+  async recover(id: string, userId: string) {
+    try {
+      return await this.prisma.product.update({
+        where: {
+          id: id,
+          userId: userId,
+        },
+        data: {
+          isActive: true,
+          variants: {
+            updateMany: {
+              where: {
+                productId: id,
+              },
+              data: {
+                isActive: true,
+              },
+            },
+          },
+        },
+      });
+    } catch (error) {
+      this.logger.error({ method: 'product-recover', error });
 
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }

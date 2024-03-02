@@ -52,8 +52,10 @@ export class VariantService {
     const existingVariants = await this.prisma.variant.findMany({
       where: {
         productId,
+        isActive: true,
         product: {
           userId,
+          isActive: true,
         },
       },
     });
@@ -101,51 +103,25 @@ export class VariantService {
       (v) => !variantIdsToUpdate.includes(v.id),
     );
     for (const variant of variantsToDelete) {
-      await this.delete(variant.id);
+      await this.removeById(variant.id, productId, userId);
     }
 
     // Return all variants
     return this.prisma.variant.findMany({
       where: {
         productId,
+        isActive: true,
+        product: {
+          userId,
+          isActive: true,
+        },
       },
     });
-  }
-
-  async delete(id: string) {
-    // Get all images associated with the variant to be deleted
-    const images = await this.prisma.image.findMany({
-      where: {
-        variantId: id,
-      },
-    });
-
-    // Delete images from Cloudinary
-    for (const image of images) {
-      if (image.publicId) {
-        try {
-          await this.cloudinaryService.deleteFile(image.publicId);
-        } catch (error) {
-          this.logger.error({ method: 'variant-delete-cloudinary', error });
-        }
-      }
-    }
-
-    // Delete the variant from the database
-    try {
-      await this.prisma.variant.delete({
-        where: { id },
-      });
-    } catch (error) {
-      this.logger.error({ method: 'variant-delete', error });
-
-      throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
-    }
   }
 
   async findAllByProductIdAndColor(productId: string, color: ColorType) {
     const variants = await this.prisma.variant.findMany({
-      where: { productId, color },
+      where: { productId, color, isActive: true },
     });
 
     if (!variants.length) {
@@ -160,5 +136,46 @@ export class VariantService {
     }
 
     return variants;
+  }
+
+  async removeAll(productId: string, userId: string) {
+    try {
+      await this.prisma.variant.updateMany({
+        where: {
+          productId,
+          product: {
+            userId,
+          },
+        },
+        data: {
+          isActive: false,
+        },
+      });
+    } catch (error) {
+      this.logger.error({ method: 'variant-removeAll', error });
+
+      throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
+    }
+  }
+
+  async removeById(id: string, productId: string, userId: string) {
+    try {
+      await this.prisma.variant.update({
+        where: {
+          id,
+          productId,
+          product: {
+            userId,
+          },
+        },
+        data: {
+          isActive: false,
+        },
+      });
+    } catch (error) {
+      this.logger.error({ method: 'variant-removeById', error });
+
+      throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
+    }
   }
 }

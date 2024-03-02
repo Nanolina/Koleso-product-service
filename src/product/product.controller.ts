@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -65,6 +66,11 @@ export class ProductController {
     return this.imageService.findAll(id, req.user.id);
   }
 
+  @Post(':id/recover')
+  recover(@Param('id') id: string, @Req() req: Request) {
+    return this.productService.recover(id, req.user.id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request) {
     return this.productService.findOne(id, req.user.id);
@@ -77,5 +83,12 @@ export class ProductController {
     @Req() req: Request,
   ) {
     return this.productService.update(updateProductDto, id, req.user.id);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async remove(@Param('id') id: string, @Req() req: Request) {
+    await this.productService.remove(id, req.user.id);
+    await this.variantService.removeAll(id, req.user.id);
   }
 }

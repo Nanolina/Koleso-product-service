@@ -20,6 +20,7 @@ export class ImageService {
     const variants = await this.prisma.variant.findMany({
       where: {
         productId,
+        isActive: true,
         product: {
           userId,
         },
@@ -58,6 +59,7 @@ export class ImageService {
       where: {
         variant: {
           productId,
+          isActive: true,
           product: {
             userId,
           },
