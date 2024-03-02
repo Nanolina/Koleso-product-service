@@ -59,18 +59,18 @@ export class StoreService {
     }
   }
 
-  async findAll(userId: string) {
+  async findAll(userId: string, filter: string = 'active') {
     return this.prisma.store.findMany({
       where: {
         userId,
-        isActive: true,
+        isActive: filter === 'active',
       },
       ...includeImage,
     });
   }
 
   async findOne(id: string, userId: string) {
-    return this.prisma.store.findFirst({
+    const store = await this.prisma.store.findFirst({
       where: {
         id,
         userId,
@@ -78,13 +78,24 @@ export class StoreService {
       },
       ...includeImage,
     });
+
+    if (!store) {
+      this.logger.error({
+        method: 'store-findOne',
+        error: 'Store not found',
+      });
+
+      throw new NotFoundException('Store not found');
+    }
+
+    return store;
   }
 
   async update(
     dto: UpdateStoreDto,
     id: string,
     userId: string,
-    logo: Express.Multer.File,
+    image: Express.Multer.File,
   ) {
     // Find store in DB
     const oldStore = await this.prisma.store.findFirst({
@@ -97,11 +108,16 @@ export class StoreService {
     });
 
     if (!oldStore) {
+      this.logger.error({
+        method: 'store-update',
+        error: 'Store not found',
+      });
+
       throw new NotFoundException('Store not found, please try again');
     }
 
     // Remove the old logo from Cloudinary if the logo changes
-    if (oldStore.image && (logo || dto.isRemoveLogo)) {
+    if (oldStore.image && (image || dto.isRemoveLogo)) {
       try {
         await this.cloudinaryService.deleteFile(oldStore.image.publicId);
       } catch (error) {
@@ -112,11 +128,11 @@ export class StoreService {
       }
     }
 
-    let logoFromCloudinary;
+    let imageFromCloudinary;
     // Upload the new logo to Cloudinary if provided
-    if (logo) {
+    if (image) {
       try {
-        logoFromCloudinary = await this.cloudinaryService.uploadLogo(logo);
+        imageFromCloudinary = await this.cloudinaryService.uploadLogo(image);
       } catch (error) {
         this.logger.error({
           method: 'store-update-cloudinary-uploadLogo',
@@ -135,16 +151,16 @@ export class StoreService {
         data: {
           name: dto.name,
           description: dto.description,
-          image: logo
+          image: image
             ? {
                 upsert: {
                   create: {
-                    url: logoFromCloudinary.url,
-                    publicId: logoFromCloudinary.public_id,
+                    url: imageFromCloudinary.url,
+                    publicId: imageFromCloudinary.public_id,
                   },
                   update: {
-                    url: logoFromCloudinary.url,
-                    publicId: logoFromCloudinary.public_id,
+                    url: imageFromCloudinary.url,
+                    publicId: imageFromCloudinary.public_id,
                   },
                 },
               }
@@ -174,6 +190,25 @@ export class StoreService {
       });
     } catch (error) {
       this.logger.error({ method: 'store-remove', error });
+
+      throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
+    }
+  }
+
+  async recover(id: string, userId: string) {
+    try {
+      return await this.prisma.store.update({
+        where: {
+          id: id,
+          userId: userId,
+        },
+        data: {
+          isActive: true,
+        },
+        ...includeImage,
+      });
+    } catch (error) {
+      this.logger.error({ method: 'store-recover', error });
 
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }

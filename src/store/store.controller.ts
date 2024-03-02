@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseInterceptors,
@@ -35,8 +36,8 @@ export class StoreController {
   }
 
   @Get()
-  findAll(@Req() req: Request) {
-    return this.storeService.findAll(req.user.id);
+  findAll(@Query('filter') filter: string, @Req() req: Request) {
+    return this.storeService.findAll(req.user.id, filter);
   }
 
   @Get(':id')
@@ -45,14 +46,19 @@ export class StoreController {
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('logo', logoUploadOptions))
+  @UseInterceptors(FileInterceptor('image', logoUploadOptions))
   update(
     @Param('id') id: string,
     @Body() updateStoreDto: UpdateStoreDto,
-    @UploadedFile() logo: Express.Multer.File,
+    @UploadedFile() image: Express.Multer.File,
     @Req() req: Request,
   ) {
-    return this.storeService.update(updateStoreDto, id, req.user.id, logo);
+    return this.storeService.update(updateStoreDto, id, req.user.id, image);
+  }
+
+  @Post(':id/recover')
+  recover(@Param('id') id: string, @Req() req: Request) {
+    return this.storeService.recover(id, req.user.id);
   }
 
   @Delete(':id')
