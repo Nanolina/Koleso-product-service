@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UploadedFiles,
   UseInterceptors,
@@ -37,8 +38,13 @@ export class ProductController {
   }
 
   @Get()
-  findAll(@Req() req: Request) {
-    return this.productService.findAll(req.user.id);
+  findAll(@Query('filter') filter: string, @Req() req: Request) {
+    return this.productService.findAll(req.user.id, filter);
+  }
+
+  @Post(':id/recover')
+  recover(@Param('id') id: string, @Req() req: Request) {
+    return this.productService.recover(id, req.user.id);
   }
 
   @Post(':id/variants')
@@ -66,11 +72,6 @@ export class ProductController {
     return this.imageService.findAll(id, req.user.id);
   }
 
-  @Post(':id/recover')
-  recover(@Param('id') id: string, @Req() req: Request) {
-    return this.productService.recover(id, req.user.id);
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request) {
     return this.productService.findOne(id, req.user.id);
@@ -86,9 +87,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   async remove(@Param('id') id: string, @Req() req: Request) {
-    await this.productService.remove(id, req.user.id);
-    await this.variantService.removeAll(id, req.user.id);
+    return this.productService.remove(id, req.user.id);
   }
 }

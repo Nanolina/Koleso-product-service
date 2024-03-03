@@ -85,11 +85,11 @@ export class ProductService {
     }
   }
 
-  async findAll(userId: string) {
+  async findAll(userId: string, filter: string = 'active') {
     return this.prisma.product.findMany({
       where: {
         userId,
-        isActive: true,
+        isActive: filter === 'active',
       },
       include: {
         variants: {
@@ -213,6 +213,16 @@ export class ProductService {
         },
         data: {
           isActive: false,
+          variants: {
+            updateMany: {
+              where: {
+                productId: id,
+              },
+              data: {
+                isActive: false,
+              },
+            },
+          },
         },
       });
     } catch (error) {
