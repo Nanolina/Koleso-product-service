@@ -17,10 +17,10 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { UpdateImagesForVariantsDto } from '../image/dto';
 import { ImageService } from '../image/image.service';
+import { MyLogger } from '../logger/my-logger.service';
 import { UpdateVariantsDto } from '../variant/dto';
 import { VariantService } from '../variant/variant.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { CreateProductDto, UpdateProductDto } from './dto';
 import { ProductService } from './product.service';
 
 @Controller('product')
@@ -29,6 +29,7 @@ export class ProductController {
     private readonly productService: ProductService,
     private readonly variantService: VariantService,
     private readonly imageService: ImageService,
+    private readonly logger: MyLogger,
   ) {}
 
   @Post()
@@ -38,8 +39,19 @@ export class ProductController {
   }
 
   @Get()
-  findAll(@Query('filter') filter: string, @Req() req: Request) {
-    return this.productService.findAll(req.user.id, filter);
+  findAll(@Query('filter') filterString: string, @Req() req: Request) {
+    // Parse filter query
+    let filter;
+    try {
+      filter = JSON.parse(filterString);
+    } catch (error) {
+      this.logger.error({
+        method: 'product-findAll-parse-filter',
+        error,
+      });
+    }
+
+    return this.productService.findAll({ filter, userId: req.user.id });
   }
 
   @Post(':id/recover')
@@ -73,8 +85,27 @@ export class ProductController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Req() req: Request) {
-    return this.productService.findOne(id, req.user.id);
+  findOne(
+    @Query('filterVariants') filterVariantsString: string,
+    @Param('id') id: string,
+    @Req() req: Request,
+  ) {
+    // Parse filter query
+    let filterVariants;
+    try {
+      filterVariants = JSON.parse(filterVariantsString);
+    } catch (error) {
+      this.logger.error({
+        method: 'product-findOne-parse-filter',
+        error,
+      });
+    }
+
+    return this.productService.findOne({
+      id,
+      filterVariants,
+      userId: req.user.id,
+    });
   }
 
   @Patch(':id')

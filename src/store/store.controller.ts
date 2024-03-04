@@ -16,13 +16,16 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { imageUploadOptions } from 'src/utils';
-import { UpdateStoreDto } from './dto';
-import { CreateStoreDto } from './dto/create-store.dto';
+import { MyLogger } from '../logger/my-logger.service';
+import { CreateStoreDto, UpdateStoreDto } from './dto';
 import { StoreService } from './store.service';
 
 @Controller('store')
 export class StoreController {
-  constructor(private readonly storeService: StoreService) {}
+  constructor(
+    private readonly storeService: StoreService,
+    private readonly logger: MyLogger,
+  ) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
@@ -36,8 +39,19 @@ export class StoreController {
   }
 
   @Get()
-  findAll(@Query('filter') filter: string, @Req() req: Request) {
-    return this.storeService.findAll(req.user.id, filter);
+  findAll(@Query('filter') filterString: string, @Req() req: Request) {
+    // Parse filter query
+    let filter;
+    try {
+      filter = JSON.parse(filterString);
+    } catch (error) {
+      this.logger.error({
+        method: 'store-findAll-parse-filter',
+        error,
+      });
+    }
+
+    return this.storeService.findAll({ userId: req.user.id, filter });
   }
 
   @Get(':id')

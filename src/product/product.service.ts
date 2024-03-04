@@ -6,8 +6,12 @@ import {
 import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import {
+  CreateProductDto,
+  FindAllDto,
+  FindOneDto,
+  UpdateProductDto,
+} from './dto';
 
 const includeVariants = {
   include: {
@@ -85,11 +89,14 @@ export class ProductService {
     }
   }
 
-  async findAll(userId: string, filter: string = 'active') {
+  async findAll(dto: FindAllDto) {
+    const { userId, filter } = dto;
+    const { type } = filter;
+
     return this.prisma.product.findMany({
       where: {
         userId,
-        isActive: filter === 'active',
+        isActive: type === 'active',
       },
       include: {
         variants: {
@@ -105,14 +112,23 @@ export class ProductService {
     });
   }
 
-  async findOne(id: string, userId: string) {
+  async findOne(dto: FindOneDto) {
+    const { id, userId, filterVariants } = dto;
+    const { type } = filterVariants;
+
     const product = await this.prisma.product.findFirst({
       where: {
         id,
         userId,
         isActive: true,
       },
-      ...includeVariants,
+      include: {
+        variants: {
+          where: {
+            isActive: type === 'active',
+          },
+        },
+      },
     });
 
     if (!product) {

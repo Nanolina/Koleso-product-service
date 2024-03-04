@@ -103,7 +103,7 @@ export class VariantService {
       (v) => !variantIdsToUpdate.includes(v.id),
     );
     for (const variant of variantsToDelete) {
-      await this.remove(variant.id, productId, userId);
+      await this.remove(variant.id, userId);
     }
 
     // Return all variants
@@ -138,12 +138,11 @@ export class VariantService {
     return variants;
   }
 
-  async remove(id: string, productId: string, userId: string) {
+  async remove(id: string, userId: string) {
     try {
       await this.prisma.variant.update({
         where: {
           id,
-          productId,
           product: {
             userId,
           },
@@ -154,6 +153,33 @@ export class VariantService {
       });
     } catch (error) {
       this.logger.error({ method: 'variant-remove', error });
+
+      throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
+    }
+  }
+
+  async recover(id: string, userId: string) {
+    try {
+      const variant = await this.prisma.variant.update({
+        where: {
+          id: id,
+          product: {
+            userId,
+          },
+        },
+        data: {
+          isActive: true,
+        },
+      });
+
+      return await this.prisma.variant.findMany({
+        where: {
+          productId: variant.productId,
+          isActive: false,
+        },
+      });
+    } catch (error) {
+      this.logger.error({ method: 'variant-recover', error });
 
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }

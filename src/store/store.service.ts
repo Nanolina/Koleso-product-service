@@ -7,8 +7,7 @@ import { UNKNOWN_ERROR_TRY } from '../consts';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CloudinaryService } from './../cloudinary/cloudinary.service';
-import { UpdateStoreDto } from './dto';
-import { CreateStoreDto } from './dto/create-store.dto';
+import { CreateStoreDto, FindAllDto, UpdateStoreDto } from './dto';
 
 const includeImage = {
   include: {
@@ -64,11 +63,14 @@ export class StoreService {
     }
   }
 
-  async findAll(userId: string, filter: string = 'active') {
+  async findAll(dto: FindAllDto) {
+    const { userId, filter } = dto;
+    const { type } = filter;
+
     return this.prisma.store.findMany({
       where: {
         userId,
-        isActive: filter === 'active',
+        isActive: type === 'active',
       },
       ...includeImage,
     });
