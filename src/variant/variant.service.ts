@@ -106,6 +106,57 @@ export class VariantService {
       await this.remove(variant.id, userId);
     }
 
+    // Find all the updated variants
+    const updatedVariants = await this.prisma.variant.findMany({
+      where: {
+        productId,
+        isActive: true,
+        product: {
+          userId,
+          isActive: true,
+        },
+      },
+    });
+
+    // Update images for this color and product
+    for (const variant of updatedVariants) {
+      // Find existing images by color and productId, but not bound to the current variantId
+      const imagesByColorAndProductId = await this.prisma.image.findMany({
+        where: {
+          variant: {
+            color: variant.color,
+            product: {
+              id: productId,
+            },
+            id: {
+              not: variant.id,
+            },
+          },
+        },
+      });
+
+      for (const image of imagesByColorAndProductId) {
+        const imageExists = await this.prisma.image.findFirst({
+          where: {
+            url: image.url,
+            publicId: image.publicId,
+            variantId: variant.id,
+          },
+        });
+
+        // If an image with this variantId already exists, do not create a duplicate image
+        if (!imageExists) {
+          await this.prisma.image.create({
+            data: {
+              variantId: variant.id,
+              publicId: image.publicId,
+              url: image.url,
+            },
+          });
+        }
+      }
+    }
+
     // Return all variants
     return this.prisma.variant.findMany({
       where: {
