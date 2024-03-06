@@ -1,13 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { ColorType } from '@prisma/client';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { createHash } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UNKNOWN_ERROR_TRY } from '../consts';
+import { ImageService } from '../image/image.service';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateVariantsDto } from './dto';
@@ -17,7 +12,7 @@ export class VariantService {
   constructor(
     private prisma: PrismaService,
     private readonly logger: MyLogger,
-    private readonly cloudinaryService: CloudinaryService,
+    private readonly imageService: ImageService,
   ) {}
 
   createArticleKoleso(productId: string, userId: string) {
@@ -45,6 +40,19 @@ export class VariantService {
     }
 
     return uniqueArticle;
+  }
+
+  async findMany(productId: string, userId: string) {
+    return this.prisma.variant.findMany({
+      where: {
+        productId,
+        isActive: true,
+        product: {
+          userId,
+          isActive: true,
+        },
+      },
+    });
   }
 
   async update(dto: UpdateVariantsDto, productId: string, userId: string) {
@@ -106,87 +114,9 @@ export class VariantService {
       await this.remove(variant.id, userId);
     }
 
-    // Find all the updated variants
-    const updatedVariants = await this.prisma.variant.findMany({
-      where: {
-        productId,
-        isActive: true,
-        product: {
-          userId,
-          isActive: true,
-        },
-      },
-    });
+    await this.imageService.copyImagesForNewVariants(productId, userId);
 
-    // Update images for this color and product
-    for (const variant of updatedVariants) {
-      // Find existing images by color and productId, but not bound to the current variantId
-      const imagesByColorAndProductId = await this.prisma.image.findMany({
-        where: {
-          variant: {
-            color: variant.color,
-            product: {
-              id: productId,
-            },
-            id: {
-              not: variant.id,
-            },
-          },
-        },
-      });
-
-      for (const image of imagesByColorAndProductId) {
-        const imageExists = await this.prisma.image.findFirst({
-          where: {
-            url: image.url,
-            publicId: image.publicId,
-            variantId: variant.id,
-          },
-        });
-
-        // If an image with this variantId already exists, do not create a duplicate image
-        if (!imageExists) {
-          await this.prisma.image.create({
-            data: {
-              variantId: variant.id,
-              publicId: image.publicId,
-              url: image.url,
-            },
-          });
-        }
-      }
-    }
-
-    // Return all variants
-    return this.prisma.variant.findMany({
-      where: {
-        productId,
-        isActive: true,
-        product: {
-          userId,
-          isActive: true,
-        },
-      },
-    });
-  }
-
-  async findAllByProductIdAndColor(productId: string, color: ColorType) {
-    const variants = await this.prisma.variant.findMany({
-      where: { productId, color, isActive: true },
-    });
-
-    if (!variants.length) {
-      this.logger.error({
-        method: 'findAllByProductIdAndColor',
-        error: `Variants not found for productId: ${productId} and color: ${color}`,
-      });
-
-      throw new BadRequestException(
-        `Variants not found for productId: ${productId} and color: ${color}`,
-      );
-    }
-
-    return variants;
+    return await this.findMany(productId, userId);
   }
 
   async remove(id: string, userId: string) {
@@ -222,6 +152,11 @@ export class VariantService {
           isActive: true,
         },
       });
+
+      await this.imageService.copyImagesForNewVariants(
+        variant.productId,
+        userId,
+      );
 
       return await this.prisma.variant.findMany({
         where: {

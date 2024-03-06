@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ColorType } from '@prisma/client';
-import { VariantService } from 'src/variant/variant.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { MyLogger } from '../logger/my-logger.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,7 +12,6 @@ export class ImageService {
     private prisma: PrismaService,
     private readonly logger: MyLogger,
     private readonly cloudinaryService: CloudinaryService,
-    private readonly variantService: VariantService,
   ) {}
 
   async findAll(productId: string, userId: string) {
@@ -86,10 +84,13 @@ export class ImageService {
       const colorType: ColorType | null = changeToColorType(file.fieldname);
 
       // Find all variants for this product and color
-      const variants = await this.variantService.findAllByProductIdAndColor(
-        productId,
-        colorType,
-      );
+      const variants = await this.prisma.variant.findMany({
+        where: {
+          productId,
+          color: colorType,
+          isActive: true,
+        },
+      });
 
       // Upload the image to Cloudinary
       let imageFromCloudinary;
@@ -116,5 +117,56 @@ export class ImageService {
     }
 
     return this.findAll(productId, userId);
+  }
+
+  async copyImagesForNewVariants(productId: string, userId: string) {
+    // Find all the updated variants
+    const updatedVariants = await this.prisma.variant.findMany({
+      where: {
+        productId,
+        isActive: true,
+        product: {
+          userId,
+          isActive: true,
+        },
+      },
+    });
+
+    // Update images for this color and product
+    for (const variant of updatedVariants) {
+      // Find existing images by color and productId, but not bound to the current variantId
+      const imagesByColorAndProductId = await this.prisma.image.findMany({
+        where: {
+          variant: {
+            color: variant.color,
+            product: {
+              id: productId,
+            },
+            id: {
+              not: variant.id,
+            },
+          },
+        },
+      });
+
+      for (const image of imagesByColorAndProductId) {
+        const data = {
+          url: image.url,
+          publicId: image.publicId,
+          variantId: variant.id,
+        };
+
+        const imageExists = await this.prisma.image.findFirst({
+          where: data,
+        });
+
+        // If an image with this variantId already exists, do not create a duplicate image
+        if (!imageExists) {
+          await this.prisma.image.create({
+            data,
+          });
+        }
+      }
+    }
   }
 }
