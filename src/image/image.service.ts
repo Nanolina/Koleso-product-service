@@ -57,7 +57,6 @@ export class ImageService {
       where: {
         variant: {
           productId,
-          isActive: true,
           product: {
             userId,
           },
