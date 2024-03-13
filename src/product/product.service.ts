@@ -84,7 +84,6 @@ export class ProductService {
       });
     } catch (error) {
       this.logger.error({ method: 'product-create', error });
-
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }
@@ -132,12 +131,9 @@ export class ProductService {
     });
 
     if (!product) {
-      this.logger.error({
-        method: 'product-findOne',
-        error: 'Product not found',
-      });
-
-      throw new NotFoundException('Product not found');
+      throw new NotFoundException(
+        'Product not found. If it has been deleted, restore it',
+      );
     }
 
     return product;
@@ -215,7 +211,6 @@ export class ProductService {
       });
     } catch (error) {
       this.logger.error({ method: 'product-update', error });
-
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }
@@ -243,7 +238,6 @@ export class ProductService {
       });
     } catch (error) {
       this.logger.error({ method: 'product-remove', error });
-
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }
@@ -271,7 +265,6 @@ export class ProductService {
       });
     } catch (error) {
       this.logger.error({ method: 'product-recover', error });
-
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }

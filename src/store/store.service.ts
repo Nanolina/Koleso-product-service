@@ -58,7 +58,6 @@ export class StoreService {
       });
     } catch (error) {
       this.logger.error({ method: 'store-create', error });
-
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }
@@ -87,12 +86,9 @@ export class StoreService {
     });
 
     if (!store) {
-      this.logger.error({
-        method: 'store-findOne',
-        error: 'Store not found',
-      });
-
-      throw new NotFoundException('Store not found');
+      throw new NotFoundException(
+        'Store not found. If it has been deleted, restore it',
+      );
     }
 
     return store;
@@ -115,12 +111,9 @@ export class StoreService {
     });
 
     if (!oldStore) {
-      this.logger.error({
-        method: 'store-update',
-        error: 'Store not found',
-      });
-
-      throw new NotFoundException('Store not found, please try again');
+      throw new NotFoundException(
+        'Store not found. If it has been deleted, restore it',
+      );
     }
 
     // Remove the old image from Cloudinary if the image changes
@@ -198,7 +191,6 @@ export class StoreService {
       });
     } catch (error) {
       this.logger.error({ method: 'store-remove', error });
-
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }
@@ -217,7 +209,6 @@ export class StoreService {
       });
     } catch (error) {
       this.logger.error({ method: 'store-recover', error });
-
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }

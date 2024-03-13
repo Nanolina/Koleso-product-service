@@ -134,7 +134,6 @@ export class VariantService {
       });
     } catch (error) {
       this.logger.error({ method: 'variant-remove', error });
-
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }
@@ -166,7 +165,6 @@ export class VariantService {
       });
     } catch (error) {
       this.logger.error({ method: 'variant-recover', error });
-
       throw new InternalServerErrorException(UNKNOWN_ERROR_TRY);
     }
   }
