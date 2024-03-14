@@ -88,15 +88,16 @@ model Subcategory {
 }
 
 model Store {
-  id          String    @id @default(uuid())
-  name        String    @db.VarChar(255)
-  description String?
-  userId      String
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  image       Image?
-  products    Product[]
+  id             String    @id @default(uuid())
+  name           String    @db.VarChar(255)
+  description    String?
+  userId         String
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  organizationId String
+  image          Image?
+  products       Product[]
 }
 
 enum GenderType {
