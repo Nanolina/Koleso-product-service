@@ -44,6 +44,7 @@ export class StoreService {
       return await this.prisma.store.create({
         data: {
           userId,
+          organizationId: dto.organizationId,
           name: dto.name,
           description: dto.description,
           ...(image && {
