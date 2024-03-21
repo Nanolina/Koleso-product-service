@@ -16,6 +16,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { imageUploadOptions } from 'src/utils';
+import { OrganizationId } from '../common/decorators';
 import { MyLogger } from '../logger/my-logger.service';
 import { CreateStoreDto, UpdateStoreDto } from './dto';
 import { StoreService } from './store.service';
@@ -39,7 +40,11 @@ export class StoreController {
   }
 
   @Get()
-  findAll(@Query('filter') filterString: string, @Req() req: Request) {
+  findAll(
+    @Query('filter') filterString: string,
+    @Req() req: Request,
+    @OrganizationId() organizationId: string,
+  ) {
     // Parse filter query
     let filter;
     try {
@@ -51,7 +56,11 @@ export class StoreController {
       });
     }
 
-    return this.storeService.findAll({ userId: req.user.id, filter });
+    return this.storeService.findAll({
+      organizationId,
+      filter,
+      userId: req.user.id,
+    });
   }
 
   @Get(':id')
