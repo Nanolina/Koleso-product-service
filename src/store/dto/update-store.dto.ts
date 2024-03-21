@@ -1,6 +1,10 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class UpdateStoreDto {
+  @IsOptional()
+  @IsUUID()
+  organizationId?: string;
+
   @IsString()
   @IsOptional()
   name?: string;

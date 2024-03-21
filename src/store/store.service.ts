@@ -151,6 +151,7 @@ export class StoreService {
           id: id,
         },
         data: {
+          organizationId: dto.organizationId,
           name: dto.name,
           description: dto.description,
           image: image
