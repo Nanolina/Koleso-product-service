@@ -11,10 +11,13 @@ import {
   Query,
   Req,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
+import { OrganizationId } from '../common/decorators';
+import { OrganizationIdGuard } from '../common/guards';
 import { UpdateImagesForVariantsDto } from '../image/dto';
 import { ImageService } from '../image/image.service';
 import { MyLogger } from '../logger/my-logger.service';
@@ -33,13 +36,26 @@ export class ProductController {
   ) {}
 
   @Post()
+  @UseGuards(OrganizationIdGuard)
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createProductDto: CreateProductDto, @Req() req: Request) {
-    return this.productService.create(createProductDto, req.user.id);
+  create(
+    @Body() createProductDto: CreateProductDto,
+    @Req() req: Request,
+    @OrganizationId() organizationId: string,
+  ) {
+    return this.productService.create(
+      createProductDto,
+      organizationId,
+      req.user.id,
+    );
   }
 
   @Get()
-  findAll(@Query('filter') filterString: string, @Req() req: Request) {
+  @UseGuards(OrganizationIdGuard)
+  findAll(
+    @Query('filter') filterString: string,
+    @OrganizationId() organizationId: string,
+  ) {
     // Parse filter query
     let filter;
     try {
@@ -51,44 +67,66 @@ export class ProductController {
       });
     }
 
-    return this.productService.findAll({ filter, userId: req.user.id });
+    return this.productService.findAll({
+      filter,
+      organizationId,
+    });
   }
 
   @Post(':id/recover')
-  recover(@Param('id') id: string, @Req() req: Request) {
-    return this.productService.recover(id, req.user.id);
+  @UseGuards(OrganizationIdGuard)
+  recover(@Param('id') id: string, @OrganizationId() organizationId: string) {
+    return this.productService.recover(id, organizationId);
   }
 
   @Post(':id/variants')
+  @UseGuards(OrganizationIdGuard)
   updateVariants(
     @Param('id') id: string,
     @Body() updateVariantsDto: UpdateVariantsDto,
     @Req() req: Request,
+    @OrganizationId() organizationId: string,
   ) {
-    return this.variantService.update(updateVariantsDto, id, req.user.id);
+    return this.variantService.update(
+      updateVariantsDto,
+      id,
+      organizationId,
+      req.user.id,
+    );
   }
 
   @Post(':id/images')
+  @UseGuards(OrganizationIdGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async updateProductImages(
     @Param('id') id: string,
     @Body() existingImagesURL: UpdateImagesForVariantsDto,
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Req() req: Request,
+    @OrganizationId() organizationId: string,
   ) {
-    return this.imageService.update(id, files, existingImagesURL, req.user.id);
+    return this.imageService.update(
+      id,
+      organizationId,
+      files,
+      existingImagesURL,
+    );
   }
 
   @Get(':id/images')
-  findImages(@Param('id') id: string, @Req() req: Request) {
-    return this.imageService.findAll(id, req.user.id);
+  @UseGuards(OrganizationIdGuard)
+  findImages(
+    @Param('id') id: string,
+    @OrganizationId() organizationId: string,
+  ) {
+    return this.imageService.findAll(id, organizationId);
   }
 
   @Get(':id')
+  @UseGuards(OrganizationIdGuard)
   findOne(
     @Query('filterVariants') filterVariantsString: string,
     @Param('id') id: string,
-    @Req() req: Request,
+    @OrganizationId() organizationId: string,
   ) {
     // Parse filter query
     let filterVariants;
@@ -103,22 +141,34 @@ export class ProductController {
 
     return this.productService.findOne({
       id,
+      organizationId,
       filterVariants,
-      userId: req.user.id,
     });
   }
 
   @Patch(':id')
+  @UseGuards(OrganizationIdGuard)
   update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
     @Req() req: Request,
+    @OrganizationId() organizationId: string,
   ) {
-    return this.productService.update(updateProductDto, id, req.user.id);
+    return this.productService.update(
+      updateProductDto,
+      id,
+      organizationId,
+      req.user.id,
+    );
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string, @Req() req: Request) {
-    return this.productService.remove(id, req.user.id);
+  @UseGuards(OrganizationIdGuard)
+  async remove(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @OrganizationId() organizationId: string,
+  ) {
+    return this.productService.remove(id, organizationId, req.user.id);
   }
 }

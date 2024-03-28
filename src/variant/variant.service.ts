@@ -42,20 +42,25 @@ export class VariantService {
     return uniqueArticle;
   }
 
-  async findMany(productId: string, userId: string) {
+  async findMany(productId: string, organizationId: string) {
     return this.prisma.variant.findMany({
       where: {
         productId,
         isActive: true,
         product: {
-          userId,
+          organizationId,
           isActive: true,
         },
       },
     });
   }
 
-  async update(dto: UpdateVariantsDto, productId: string, userId: string) {
+  async update(
+    dto: UpdateVariantsDto,
+    productId: string,
+    organizationId: string,
+    userId: string,
+  ) {
     // Get existing variants for the product
     const existingVariants = await this.prisma.variant.findMany({
       where: {
@@ -63,6 +68,7 @@ export class VariantService {
         isActive: true,
         product: {
           userId,
+          organizationId,
           isActive: true,
         },
       },
@@ -111,21 +117,21 @@ export class VariantService {
       (v) => !variantIdsToUpdate.includes(v.id),
     );
     for (const variant of variantsToDelete) {
-      await this.remove(variant.id, userId);
+      await this.remove(variant.id, organizationId);
     }
 
-    await this.imageService.copyImagesForNewVariants(productId, userId);
+    await this.imageService.copyImagesForNewVariants(productId, organizationId);
 
-    return await this.findMany(productId, userId);
+    return await this.findMany(productId, organizationId);
   }
 
-  async remove(id: string, userId: string) {
+  async remove(id: string, organizationId: string) {
     try {
       await this.prisma.variant.update({
         where: {
           id,
           product: {
-            userId,
+            organizationId,
           },
         },
         data: {

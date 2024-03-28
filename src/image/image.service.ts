@@ -14,13 +14,13 @@ export class ImageService {
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
-  async findAll(productId: string, userId: string) {
+  async findAll(productId: string, organizationId: string) {
     const variants = await this.prisma.variant.findMany({
       where: {
         productId,
         isActive: true,
         product: {
-          userId,
+          organizationId,
         },
       },
       include: {
@@ -49,16 +49,16 @@ export class ImageService {
 
   async update(
     productId: string,
+    organizationId: string,
     files: Array<Express.Multer.File>,
     existingImagesURL: UpdateImagesForVariantsDto,
-    userId: string,
   ) {
     const existingImages = await this.prisma.image.findMany({
       where: {
         variant: {
           productId,
           product: {
-            userId,
+            organizationId,
           },
         },
       },
@@ -115,17 +115,17 @@ export class ImageService {
       }
     }
 
-    return this.findAll(productId, userId);
+    return this.findAll(productId, organizationId);
   }
 
-  async copyImagesForNewVariants(productId: string, userId: string) {
+  async copyImagesForNewVariants(productId: string, organizationId: string) {
     // Find all the updated variants
     const updatedVariants = await this.prisma.variant.findMany({
       where: {
         productId,
         isActive: true,
         product: {
-          userId,
+          organizationId,
           isActive: true,
         },
       },

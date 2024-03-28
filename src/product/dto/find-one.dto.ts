@@ -8,7 +8,7 @@ export class FindOneDto {
 
   @IsDefined()
   @IsUUID()
-  userId: string;
+  organizationId: string;
 
   @IsDefined()
   @IsObject()

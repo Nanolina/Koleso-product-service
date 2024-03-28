@@ -31,14 +31,21 @@ export class StoreController {
   ) {}
 
   @Post()
+  @UseGuards(OrganizationIdGuard)
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   @HttpCode(HttpStatus.CREATED)
   create(
     @Body() createStoreDto: CreateStoreDto,
     @UploadedFile() image: Express.Multer.File,
     @Req() req: Request,
+    @OrganizationId() organizationId: string,
   ) {
-    return this.storeService.create(createStoreDto, req.user.id, image);
+    return this.storeService.create(
+      createStoreDto,
+      organizationId,
+      req.user.id,
+      image,
+    );
   }
 
   @Get()
@@ -67,28 +74,51 @@ export class StoreController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Req() req: Request) {
-    return this.storeService.findOne(id, req.user.id);
+  @UseGuards(OrganizationIdGuard)
+  findOne(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @OrganizationId() organizationId: string,
+  ) {
+    return this.storeService.findOne(id, organizationId, req.user.id);
   }
 
   @Patch(':id')
+  @UseGuards(OrganizationIdGuard)
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   update(
     @Param('id') id: string,
     @Body() updateStoreDto: UpdateStoreDto,
     @UploadedFile() image: Express.Multer.File,
     @Req() req: Request,
+    @OrganizationId() organizationId: string,
   ) {
-    return this.storeService.update(updateStoreDto, id, req.user.id, image);
+    return this.storeService.update(
+      updateStoreDto,
+      id,
+      organizationId,
+      req.user.id,
+      image,
+    );
   }
 
   @Post(':id/recover')
-  recover(@Param('id') id: string, @Req() req: Request) {
-    return this.storeService.recover(id, req.user.id);
+  @UseGuards(OrganizationIdGuard)
+  recover(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @OrganizationId() organizationId: string,
+  ) {
+    return this.storeService.recover(id, organizationId, req.user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() req: Request) {
-    return this.storeService.remove(id, req.user.id);
+  @UseGuards(OrganizationIdGuard)
+  remove(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @OrganizationId() organizationId: string,
+  ) {
+    return this.storeService.remove(id, organizationId, req.user.id);
   }
 }

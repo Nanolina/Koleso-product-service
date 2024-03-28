@@ -9,26 +9,27 @@ datasource db {
 }
 
 model Product {
-  id            String       @id @default(uuid())
-  name          String
-  description   String?
-  brand         String?
-  model         String?
-  gender        GenderType?
-  sectionId     Int
-  categoryId    Int?
-  subcategoryId Int?
-  composition   Json?
-  storeId       String
-  userId        String
-  isActive      Boolean      @default(true)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  category      Category?    @relation(fields: [categoryId], references: [id])
-  section       Section      @relation(fields: [sectionId], references: [id])
-  store         Store        @relation(fields: [storeId], references: [id])
-  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
-  variants      Variant[]
+  id             String       @id @default(uuid())
+  name           String
+  description    String?
+  brand          String?
+  model          String?
+  gender         GenderType?
+  sectionId      Int
+  categoryId     Int?
+  subcategoryId  Int?
+  composition    Json?
+  storeId        String
+  userId         String
+  organizationId String
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  category       Category?    @relation(fields: [categoryId], references: [id])
+  section        Section      @relation(fields: [sectionId], references: [id])
+  store          Store        @relation(fields: [storeId], references: [id])
+  subcategory    Subcategory? @relation(fields: [subcategoryId], references: [id])
+  variants       Variant[]
 }
 
 model Variant {

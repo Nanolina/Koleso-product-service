@@ -4,7 +4,7 @@ import { FilterDto } from './filter.dto';
 export class FindAllDto {
   @IsDefined()
   @IsUUID()
-  userId: string;
+  organizationId: string;
 
   @IsDefined()
   @IsObject()

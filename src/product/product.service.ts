@@ -30,7 +30,7 @@ export class ProductService {
     private readonly logger: MyLogger,
   ) {}
 
-  async create(dto: CreateProductDto, userId: string) {
+  async create(dto: CreateProductDto, organizationId: string, userId: string) {
     // Catalog structure
     const categoryId = dto.categoryId;
     const subcategoryId = dto.subcategoryId;
@@ -67,6 +67,7 @@ export class ProductService {
       return await this.prisma.product.create({
         data: {
           userId,
+          organizationId,
           name: dto.name,
           description: dto.description,
           brand: dto.brand,
@@ -89,12 +90,12 @@ export class ProductService {
   }
 
   async findAll(dto: FindAllDto) {
-    const { userId, filter } = dto;
+    const { organizationId, filter } = dto;
     const { type } = filter;
 
     return this.prisma.product.findMany({
       where: {
-        userId,
+        organizationId,
         isActive: type === 'active',
       },
       include: {
@@ -112,13 +113,13 @@ export class ProductService {
   }
 
   async findOne(dto: FindOneDto) {
-    const { id, userId, filterVariants } = dto;
+    const { id, organizationId, filterVariants } = dto;
     const { type } = filterVariants;
 
     const product = await this.prisma.product.findFirst({
       where: {
         id,
-        userId,
+        organizationId,
         isActive: true,
       },
       include: {
@@ -139,7 +140,12 @@ export class ProductService {
     return product;
   }
 
-  async update(dto: UpdateProductDto, id: string, userId: string) {
+  async update(
+    dto: UpdateProductDto,
+    id: string,
+    organizationId: string,
+    userId: string,
+  ) {
     // Catalog structure
     const categoryId = dto.categoryId;
     const subcategoryId = dto.subcategoryId;
@@ -188,10 +194,11 @@ export class ProductService {
       return await this.prisma.product.update({
         where: {
           id,
-          userId,
+          organizationId,
           isActive: true,
         },
         data: {
+          userId,
           name: dto.name,
           description: dto.description,
           brand: dto.brand,
@@ -215,14 +222,15 @@ export class ProductService {
     }
   }
 
-  async remove(id: string, userId: string) {
+  async remove(id: string, organizationId: string, userId: string) {
     try {
       await this.prisma.product.update({
         where: {
-          id: id,
-          userId: userId,
+          id,
+          organizationId,
         },
         data: {
+          userId,
           isActive: false,
           variants: {
             updateMany: {
@@ -242,12 +250,12 @@ export class ProductService {
     }
   }
 
-  async recover(id: string, userId: string) {
+  async recover(id: string, organizationId: string) {
     try {
       return await this.prisma.product.update({
         where: {
-          id: id,
-          userId: userId,
+          id,
+          organizationId,
         },
         data: {
           isActive: true,

@@ -25,6 +25,7 @@ export class StoreService {
 
   async create(
     dto: CreateStoreDto,
+    organizationId: string,
     userId: string,
     image: Express.Multer.File,
   ) {
@@ -44,7 +45,7 @@ export class StoreService {
       return await this.prisma.store.create({
         data: {
           userId,
-          organizationId: dto.organizationId,
+          organizationId,
           name: dto.name,
           description: dto.description,
           ...(image && {
@@ -70,8 +71,8 @@ export class StoreService {
     const stores = await this.prisma.store.findMany({
       where: {
         userId,
+        organizationId,
         isActive: type === 'active',
-        organizationId: organizationId,
       },
       ...includeImage,
     });
@@ -79,11 +80,12 @@ export class StoreService {
     return stores;
   }
 
-  async findOne(id: string, userId: string) {
+  async findOne(id: string, organizationId: string, userId: string) {
     const store = await this.prisma.store.findFirst({
       where: {
         id,
         userId,
+        organizationId,
         isActive: true,
       },
       ...includeImage,
@@ -101,6 +103,7 @@ export class StoreService {
   async update(
     dto: UpdateStoreDto,
     id: string,
+    organizationId: string,
     userId: string,
     image: Express.Multer.File,
   ) {
@@ -109,6 +112,7 @@ export class StoreService {
       where: {
         id,
         userId,
+        organizationId,
         isActive: true,
       },
       ...includeImage,
@@ -154,7 +158,6 @@ export class StoreService {
           id: id,
         },
         data: {
-          organizationId: dto.organizationId,
           name: dto.name,
           description: dto.description,
           image: image
@@ -183,12 +186,13 @@ export class StoreService {
     }
   }
 
-  async remove(id: string, userId: string) {
+  async remove(id: string, organizationId: string, userId: string) {
     try {
       return await this.prisma.store.update({
         where: {
-          id: id,
-          userId: userId,
+          id,
+          userId,
+          organizationId,
         },
         data: {
           isActive: false,
@@ -200,12 +204,13 @@ export class StoreService {
     }
   }
 
-  async recover(id: string, userId: string) {
+  async recover(id: string, organizationId: string, userId: string) {
     try {
       return await this.prisma.store.update({
         where: {
-          id: id,
-          userId: userId,
+          id,
+          userId,
+          organizationId,
         },
         data: {
           isActive: true,
