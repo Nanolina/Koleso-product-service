@@ -65,12 +65,11 @@ export class StoreService {
   }
 
   async findAll(dto: FindAllDto) {
-    const { organizationId, userId, filter } = dto;
+    const { organizationId, filter } = dto;
     const { type } = filter;
 
     const stores = await this.prisma.store.findMany({
       where: {
-        userId,
         organizationId,
         isActive: type === 'active',
       },
@@ -80,11 +79,10 @@ export class StoreService {
     return stores;
   }
 
-  async findOne(id: string, organizationId: string, userId: string) {
+  async findOne(id: string, organizationId: string) {
     const store = await this.prisma.store.findFirst({
       where: {
         id,
-        userId,
         organizationId,
         isActive: true,
       },
@@ -111,7 +109,6 @@ export class StoreService {
     const oldStore = await this.prisma.store.findFirst({
       where: {
         id,
-        userId,
         organizationId,
         isActive: true,
       },
@@ -155,9 +152,10 @@ export class StoreService {
     try {
       return await this.prisma.store.update({
         where: {
-          id: id,
+          id,
         },
         data: {
+          userId,
           name: dto.name,
           description: dto.description,
           image: image
@@ -191,10 +189,10 @@ export class StoreService {
       return await this.prisma.store.update({
         where: {
           id,
-          userId,
           organizationId,
         },
         data: {
+          userId,
           isActive: false,
         },
       });
@@ -209,10 +207,10 @@ export class StoreService {
       return await this.prisma.store.update({
         where: {
           id,
-          userId,
           organizationId,
         },
         data: {
+          userId,
           isActive: true,
         },
         ...includeImage,

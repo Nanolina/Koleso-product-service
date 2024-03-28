@@ -27,6 +27,7 @@ import { CreateProductDto, UpdateProductDto } from './dto';
 import { ProductService } from './product.service';
 
 @Controller('product')
+@UseGuards(OrganizationIdGuard)
 export class ProductController {
   constructor(
     private readonly productService: ProductService,
@@ -36,7 +37,6 @@ export class ProductController {
   ) {}
 
   @Post()
-  @UseGuards(OrganizationIdGuard)
   @HttpCode(HttpStatus.CREATED)
   create(
     @Body() createProductDto: CreateProductDto,
@@ -51,7 +51,6 @@ export class ProductController {
   }
 
   @Get()
-  @UseGuards(OrganizationIdGuard)
   findAll(
     @Query('filter') filterString: string,
     @OrganizationId() organizationId: string,
@@ -74,29 +73,24 @@ export class ProductController {
   }
 
   @Post(':id/recover')
-  @UseGuards(OrganizationIdGuard)
-  recover(@Param('id') id: string, @OrganizationId() organizationId: string) {
-    return this.productService.recover(id, organizationId);
-  }
-
-  @Post(':id/variants')
-  @UseGuards(OrganizationIdGuard)
-  updateVariants(
+  recover(
     @Param('id') id: string,
-    @Body() updateVariantsDto: UpdateVariantsDto,
     @Req() req: Request,
     @OrganizationId() organizationId: string,
   ) {
-    return this.variantService.update(
-      updateVariantsDto,
-      id,
-      organizationId,
-      req.user.id,
-    );
+    return this.productService.recover(id, organizationId, req.user.id);
+  }
+
+  @Post(':id/variants')
+  updateVariants(
+    @Param('id') id: string,
+    @Body() updateVariantsDto: UpdateVariantsDto,
+    @OrganizationId() organizationId: string,
+  ) {
+    return this.variantService.update(updateVariantsDto, id, organizationId);
   }
 
   @Post(':id/images')
-  @UseGuards(OrganizationIdGuard)
   @UseInterceptors(AnyFilesInterceptor())
   async updateProductImages(
     @Param('id') id: string,
@@ -113,7 +107,6 @@ export class ProductController {
   }
 
   @Get(':id/images')
-  @UseGuards(OrganizationIdGuard)
   findImages(
     @Param('id') id: string,
     @OrganizationId() organizationId: string,
@@ -122,7 +115,6 @@ export class ProductController {
   }
 
   @Get(':id')
-  @UseGuards(OrganizationIdGuard)
   findOne(
     @Query('filterVariants') filterVariantsString: string,
     @Param('id') id: string,
@@ -147,7 +139,6 @@ export class ProductController {
   }
 
   @Patch(':id')
-  @UseGuards(OrganizationIdGuard)
   update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -163,7 +154,6 @@ export class ProductController {
   }
 
   @Delete(':id')
-  @UseGuards(OrganizationIdGuard)
   async remove(
     @Param('id') id: string,
     @Req() req: Request,

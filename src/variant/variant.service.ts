@@ -15,25 +15,25 @@ export class VariantService {
     private readonly imageService: ImageService,
   ) {}
 
-  createArticleKoleso(productId: string, userId: string) {
+  createArticleKoleso(productId: string, organizationId: string) {
     const uuid = uuidv4();
-    const dataToHash = `${uuid}-${productId}-${userId}`;
+    const dataToHash = `${uuid}-${productId}-${organizationId}`;
     const hash = createHash('sha256').update(dataToHash).digest('hex');
     return hash.substring(0, 10);
   }
 
   async generateUniqueArticleKoleso(
     productId: string,
-    userId: string,
+    organizationId: string,
   ): Promise<string> {
-    let uniqueArticle = this.createArticleKoleso(productId, userId);
+    let uniqueArticle = this.createArticleKoleso(productId, organizationId);
     let exists = await this.prisma.variant.findUnique({
       where: { articleKoleso: uniqueArticle },
     });
 
     // While there is a variant with such an articleKoleso, generate a new one
     while (exists) {
-      uniqueArticle = this.createArticleKoleso(productId, userId);
+      uniqueArticle = this.createArticleKoleso(productId, organizationId);
       exists = await this.prisma.variant.findUnique({
         where: { articleKoleso: uniqueArticle },
       });
@@ -59,7 +59,6 @@ export class VariantService {
     dto: UpdateVariantsDto,
     productId: string,
     organizationId: string,
-    userId: string,
   ) {
     // Get existing variants for the product
     const existingVariants = await this.prisma.variant.findMany({
@@ -67,7 +66,6 @@ export class VariantService {
         productId,
         isActive: true,
         product: {
-          userId,
           organizationId,
           isActive: true,
         },
@@ -102,7 +100,7 @@ export class VariantService {
             size: variantDto.size,
             articleKoleso: await this.generateUniqueArticleKoleso(
               productId,
-              userId,
+              organizationId,
             ),
           },
         });
@@ -144,13 +142,13 @@ export class VariantService {
     }
   }
 
-  async recover(id: string, userId: string) {
+  async recover(id: string, organizationId: string) {
     try {
       const variant = await this.prisma.variant.update({
         where: {
           id: id,
           product: {
-            userId,
+            organizationId,
           },
         },
         data: {
@@ -160,7 +158,7 @@ export class VariantService {
 
       await this.imageService.copyImagesForNewVariants(
         variant.productId,
-        userId,
+        organizationId,
       );
 
       return await this.prisma.variant.findMany({

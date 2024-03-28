@@ -24,6 +24,7 @@ import { CreateStoreDto, UpdateStoreDto } from './dto';
 import { StoreService } from './store.service';
 
 @Controller('store')
+@UseGuards(OrganizationIdGuard)
 export class StoreController {
   constructor(
     private readonly storeService: StoreService,
@@ -31,7 +32,6 @@ export class StoreController {
   ) {}
 
   @Post()
-  @UseGuards(OrganizationIdGuard)
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   @HttpCode(HttpStatus.CREATED)
   create(
@@ -49,10 +49,8 @@ export class StoreController {
   }
 
   @Get()
-  @UseGuards(OrganizationIdGuard)
   findAll(
     @Query('filter') filterString: string,
-    @Req() req: Request,
     @OrganizationId() organizationId: string,
   ) {
     // Parse filter query
@@ -69,22 +67,15 @@ export class StoreController {
     return this.storeService.findAll({
       organizationId,
       filter,
-      userId: req.user.id,
     });
   }
 
   @Get(':id')
-  @UseGuards(OrganizationIdGuard)
-  findOne(
-    @Param('id') id: string,
-    @Req() req: Request,
-    @OrganizationId() organizationId: string,
-  ) {
-    return this.storeService.findOne(id, organizationId, req.user.id);
+  findOne(@Param('id') id: string, @OrganizationId() organizationId: string) {
+    return this.storeService.findOne(id, organizationId);
   }
 
   @Patch(':id')
-  @UseGuards(OrganizationIdGuard)
   @UseInterceptors(FileInterceptor('image', imageUploadOptions))
   update(
     @Param('id') id: string,
@@ -103,7 +94,6 @@ export class StoreController {
   }
 
   @Post(':id/recover')
-  @UseGuards(OrganizationIdGuard)
   recover(
     @Param('id') id: string,
     @Req() req: Request,
@@ -113,7 +103,6 @@ export class StoreController {
   }
 
   @Delete(':id')
-  @UseGuards(OrganizationIdGuard)
   remove(
     @Param('id') id: string,
     @Req() req: Request,

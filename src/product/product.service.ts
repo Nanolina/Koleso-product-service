@@ -250,7 +250,7 @@ export class ProductService {
     }
   }
 
-  async recover(id: string, organizationId: string) {
+  async recover(id: string, organizationId: string, userId: string) {
     try {
       return await this.prisma.product.update({
         where: {
@@ -258,6 +258,7 @@ export class ProductService {
           organizationId,
         },
         data: {
+          userId,
           isActive: true,
           variants: {
             updateMany: {

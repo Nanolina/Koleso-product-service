@@ -7,10 +7,6 @@ export class FindAllDto {
   organizationId: string;
 
   @IsDefined()
-  @IsUUID()
-  userId: string;
-
-  @IsDefined()
   @IsObject()
   filter: FilterDto;
 }
