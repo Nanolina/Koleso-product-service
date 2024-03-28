@@ -11,13 +11,15 @@ import {
   Query,
   Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
-import { imageUploadOptions } from 'src/utils';
 import { OrganizationId } from '../common/decorators';
+import { OrganizationIdGuard } from '../common/guards';
 import { MyLogger } from '../logger/my-logger.service';
+import { imageUploadOptions } from '../utils';
 import { CreateStoreDto, UpdateStoreDto } from './dto';
 import { StoreService } from './store.service';
 
@@ -40,6 +42,7 @@ export class StoreController {
   }
 
   @Get()
+  @UseGuards(OrganizationIdGuard)
   findAll(
     @Query('filter') filterString: string,
     @Req() req: Request,

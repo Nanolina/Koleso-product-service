@@ -71,15 +71,7 @@ export class StoreService {
       where: {
         userId,
         isActive: type === 'active',
-        /*
-         * Fetch stores based on provided filters. Note: In Prisma, when 'undefined' is used as a query value,
-         * it is equivalent to not including the key at all, which means it does not filter by that field.
-         * Here, if 'organizationId' is undefined, we intentionally set it to an empty string ('') to avoid
-         * unintentional retrieval of stores across all organizations. This ensures that only stores
-         * within a specific organization (if provided) are returned. Reference:
-         * https://www.prisma.io/docs/concepts/components/prisma-client/null-and-undefined
-         */
-        organizationId: organizationId || '',
+        organizationId: organizationId,
       },
       ...includeImage,
     });
