@@ -58,6 +58,7 @@ export class StoreController {
     try {
       filter = JSON.parse(filterString);
     } catch (error) {
+      filter = {};
       this.logger.error({
         method: 'store-findAll-parse-filter',
         error,

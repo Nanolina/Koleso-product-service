@@ -60,6 +60,7 @@ export class ProductController {
     try {
       filter = JSON.parse(filterString);
     } catch (error) {
+      filter = {};
       this.logger.error({
         method: 'product-findAll-parse-filter',
         error,
@@ -125,6 +126,7 @@ export class ProductController {
     try {
       filterVariants = JSON.parse(filterVariantsString);
     } catch (error) {
+      filterVariants = {};
       this.logger.error({
         method: 'product-findOne-parse-filter',
         error,

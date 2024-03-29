@@ -132,9 +132,7 @@ export class ProductService {
     });
 
     if (!product) {
-      throw new NotFoundException(
-        'Product not found. If it has been deleted, restore it',
-      );
+      throw new NotFoundException('Product not found');
     }
 
     return product;
