@@ -24,13 +24,13 @@ import { MyLogger } from '../logger/my-logger.service';
 import { UpdateVariantsDto } from '../variant/dto';
 import { VariantService } from '../variant/variant.service';
 import { CreateProductDto, UpdateProductDto } from './dto';
-import { ProductService } from './product.service';
+import { ProductSellerService } from './product-seller.service';
 
-@Controller('product')
+@Controller('seller/product')
 @UseGuards(OrganizationIdGuard)
-export class ProductController {
+export class ProductSellerController {
   constructor(
-    private readonly productService: ProductService,
+    private readonly productService: ProductSellerService,
     private readonly variantService: VariantService,
     private readonly imageService: ImageService,
     private readonly logger: MyLogger,

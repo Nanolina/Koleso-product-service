@@ -7,7 +7,7 @@ import {
   IsUUID,
   Validate,
 } from 'class-validator';
-import { IsValidColorConstraint } from '../../product/validators';
+import { IsValidColorConstraint } from '../../product-seller/validators';
 
 export class VariantDto {
   // For create new variant

@@ -6,7 +6,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ImageModule } from './image/image.module';
 import { LoggerModule } from './logger/logger.module';
 import { PrismaService } from './prisma/prisma.service';
-import { ProductModule } from './product/product.module';
+import { ProductCustomerModule } from './product-customer/product-customer.module';
+import { ProductSellerModule } from './product-seller/product-seller.module';
 import { StoreModule } from './store/store.module';
 import { VariantModule } from './variant/variant.module';
 
@@ -15,7 +16,8 @@ import { VariantModule } from './variant/variant.module';
     LoggerModule,
     AuthModule,
     StoreModule,
-    ProductModule,
+    ProductSellerModule,
+    ProductCustomerModule,
     CloudinaryModule,
     CatalogModule,
     VariantModule,

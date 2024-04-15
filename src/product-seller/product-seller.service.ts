@@ -24,7 +24,7 @@ const includeVariants = {
 };
 
 @Injectable()
-export class ProductService {
+export class ProductSellerService {
   constructor(
     private prisma: PrismaService,
     private readonly logger: MyLogger,

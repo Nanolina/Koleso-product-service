@@ -5,12 +5,17 @@ import { ImageService } from '../image/image.service';
 import { LoggerModule } from '../logger/logger.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { VariantService } from '../variant/variant.service';
-import { ProductController } from './product.controller';
-import { ProductService } from './product.service';
+import { ProductSellerController } from './product-seller.controller';
+import { ProductSellerService } from './product-seller.service';
 
 @Module({
   imports: [LoggerModule, AuthModule, CloudinaryModule],
-  controllers: [ProductController],
-  providers: [ProductService, PrismaService, VariantService, ImageService],
+  controllers: [ProductSellerController],
+  providers: [
+    ProductSellerService,
+    PrismaService,
+    VariantService,
+    ImageService,
+  ],
 })
-export class ProductModule {}
+export class ProductSellerModule {}
