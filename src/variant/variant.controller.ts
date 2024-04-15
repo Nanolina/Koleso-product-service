@@ -3,7 +3,7 @@ import { OrganizationId } from '../common/decorators';
 import { OrganizationIdGuard } from '../common/guards';
 import { VariantService } from './variant.service';
 
-@Controller('variant')
+@Controller('seller/variant')
 @UseGuards(OrganizationIdGuard)
 export class VariantController {
   constructor(private readonly variantService: VariantService) {}
